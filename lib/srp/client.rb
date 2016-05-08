@@ -36,7 +36,7 @@ module SRP
       # calculate verifier
       @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K, @N, @g))
 
-      return @M
+      @M
     end
 
     def verify(server_HAMK)

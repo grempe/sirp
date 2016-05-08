@@ -89,9 +89,9 @@ module SRP
 
     # M = H(H(N) xor H(g), H(I), s, A, B, K)
     def calc_M(username, xsalt, xaa, xbb, xkk, n, g)
-      hn = sha1_hex("%x" % n).hex
-      hg = sha1_hex("%x" % g).hex
-      hxor = "%x" % (hn ^ hg)
+      hn = sha1_hex(format('%x', n)).hex
+      hg = sha1_hex(format('%x', g)).hex
+      hxor = format('%x', (hn ^ hg))
       hi = sha1_str(username)
       H(n, hxor, hi, xsalt, xaa, xbb, xkk)
     end
