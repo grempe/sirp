@@ -2,7 +2,7 @@ module SRP
   class Client
     attr_reader :N, :g, :k, :a, :A, :S, :K, :M, :H_AMK
 
-    def initialize group=1024
+    def initialize(group = 1024)
       # select modulus (N) and generator (g)
       @N, @g = SRP.Ng group
       @k = SRP.calc_k(@N, @g)
@@ -15,7 +15,7 @@ module SRP
     # Process initiated authentication challenge.
     # Returns M if authentication is successful, false otherwise.
     # Salt and B should be given in hex.
-    def process_challenge username, password, xsalt, xbb
+    def process_challenge(username, password, xsalt, xbb)
       bb = xbb.to_i(16)
       # SRP-6a safety check
       return false if (bb % @N) == 0
@@ -27,19 +27,19 @@ module SRP
       return false if u == 0
 
       # calculate session key
-      @S = "%x" % SRP.calc_client_S(bb, @a, @k, x, u, @N, @g)
+      @S = format('%x', SRP.calc_client_S(bb, @a, @k, x, u, @N, @g))
       @K = SRP.sha1_hex(@S)
 
       # calculate match
-      @M = "%x" % SRP.calc_M(username, xsalt, @A, xbb, @K, @N, @g)
+      @M = format('%x', SRP.calc_M(username, xsalt, @A, xbb, @K, @N, @g))
 
       # calculate verifier
-      @H_AMK = "%x" % SRP.calc_H_AMK(@A, @M, @K, @N, @g)
+      @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K, @N, @g))
 
       return @M
     end
 
-    def verify server_HAMK
+    def verify(server_HAMK)
       return false unless @H_AMK
       @H_AMK == server_HAMK
     end
@@ -50,7 +50,7 @@ module SRP
 
     def generate_A
       @a ||= random_bignum
-      @A = "%x" % SRP.calc_A(@a, @N, @g)
+      @A = format('%x', SRP.calc_A(@a, @N, @g))
     end
-  end # Client
+  end
 end
