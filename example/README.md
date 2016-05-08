@@ -1,11 +1,22 @@
 Test authentication mechanism:
 
-* launch Ruby server
+* Install required gems
 
-    `bundle exec ruby server.rb`
+```
+cd example
+bundle install
+```
 
-* authenticate Python client
+* Launch Ruby server in Terminal 1
 
-    `python client.py <username> <password>`
+```
+bundle exec ruby server.rb
+```
 
-You can find correct username : password combinations in server.rb.
+* Authenticate with Python client in Terminal 2
+
+```
+python client.py <username> <password>
+```
+
+You can find correct username : password combinations in `server.rb`

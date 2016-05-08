@@ -29,22 +29,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =end
-require 'srp'
-
-# monkey-patch API to define a, b and salt presetters
-class SRP::Verifier
-  def set_b val
-    @b = val
-  end
-  def set_salt val
-    @salt = val
-  end
-end
-class SRP::Client
-  def set_a val
-    @a = val
-  end
-end
+require 'spec_helper'
 
 describe SRP do
   ###
@@ -269,7 +254,7 @@ describe SRP do
       bb = "56777d24af1121bd6af6aeb84238ff8d250122fe75ed251db0f47c289642ae7adb9ef319ce3ab23b6ecc97e5904749fc42f12bb016ecf39691db541f066667b8399bfa685c82b03ad8f92f75975ed086dbe0d470d4dd907ce11b19ee41b74aee72bd8445cde6b58c01f678e39ed9cd6b93c79382637df90777a96c10a768c510"
       # v is from db
       v = "321307d87ca3462f5b0cb5df295bea04498563794e5401899b2f32dd5cab5b7de9da78e7d62ea235e6d7f43a4ea09fea7c0dafdee6e79a1d12e2e374048deeaf5ba7c68e2ad952a3f5dc084400a7f1599a31d6d9d50269a9208db88f84090e8aa3c7b019f39529dcc19baa985a8d7ffb2d7628071d2313c9eaabc504d3333688"
-      _proof = {:A => aa, :B => bb, :b => @b, 
+      _proof = {:A => aa, :B => bb, :b => @b,
         :I => @username, :s => @salt, :v => v}
       srp = SRP::Verifier.new(1024)
       srp.verify_session(_proof, "match insignificant")
@@ -291,7 +276,7 @@ describe SRP do
       # K = H(S)
       kk = SRP.sha1_hex(ss)
       client_M = "52fb39fcacc2d909675ea3cf2b967980fc40ae0"
-      _proof = {:A => aa, :B => bb, :b => @b, 
+      _proof = {:A => aa, :B => bb, :b => @b,
         :I => @username, :s => @salt, :v => v}
       srp = SRP::Verifier.new(1024)
       srp.verify_session(_proof, client_M)
