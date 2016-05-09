@@ -4,13 +4,13 @@ Test authentication mechanism:
 
 ```
 cd example
-bundle install
 ```
 
 * Launch Ruby server in Terminal 1
 
 ```
-bundle exec ruby server.rb
+bundle install
+./server.rb
 ```
 
 * Authenticate with Python client in Terminal 2

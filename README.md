@@ -1,81 +1,84 @@
-This is a pure Ruby implementation of the Secure Remote Password protocol (SRP-6a).
+# Secure Remote Password
 
-SRP is an authentication method that allows the use of user names and passwords over an insecure network connection without revealing the password. If the client side lacks the user's password or the server side lacks the proper verification key, the authentication will fail.
+This is a pure Ruby implementation of the Secure Remote Password
+protocol (SRP-6a), a 'zero-knowledge' authentication system.
 
-Unlike other common challenge-response authentication protocols, such as Kerberos and SSL, SRP does not rely on an external infrastructure of trusted key servers or certificate management.
+SRP is an authentication method that allows the use of user names and passwords
+over an insecure network connection without revealing the password. If either the
+client lacks the user's password or the server lacks the proper verification
+key, the authentication will fail.
 
+Unlike other common challenge-response authentication protocols, such as
+Kerberos and SSL, SRP does not rely on an external infrastructure of trusted
+key servers or complex certificate management.
 
 References
 
 *	[http://srp.stanford.edu/](http://srp.stanford.edu/)
-*	[http://srp.stanford.edu/demo/demo.html](http://srp.stanford.edu/demo/demo.html)
 
-Usage example
-=============
+## Usage Example
 
+In this example the client and server steps are interleaved to demonstrate
+the responsibilities each side has in the protocol. See the `example` dir for
+simple working client and server implementations.
 
-	username = "user"
-	password = "password"
+``` ruby
+require 'srp'
 
-	require 'srp'
-	prime_length = 1024
+username     = "user"
+password     = "password"
+prime_length = 1024
 
-	# The salt and verifier should be stored on the server database.
+# The salt and verifier should be stored on the server database.
+@auth = SRP::Verifier.new(prime_length).generate_userauth(username, password)
+# @auth is a hash containing :username, :verifier and :salt
 
-		@auth = SRP::Verifier.new(prime_length).generate_userauth(username, password)
-		# @auth is a hash containing :username, :verifier and :salt
+# ~~~ Begin Authentication ~~~
 
+client = SRP::Client.new(prime_length)
+A = client.start_authentication
 
-	# ~~~ Begin Authentication ~~~
+# Client => Server: username, A
 
-		client = SRP::Client.new(prime_length)
-		A = client.start_authentication()
+# Server retrieves user's verifier and salt from the database.
+v    = @auth[:verifier]
+salt = @auth[:salt]
 
+# Server generates challenge for the client.
+verifier = SRP::Verifier.new(prime_length)
+session = verifier.get_challenge_and_proof(username, v, salt, A)
 
-	# Client => Server: username, A
+# Server has to persist proof to authenticate the client response later.
+@proof = session[:proof]
 
-		# Server retrieves user's verifier and salt from the database.
-		v = @auth[:verifier]
-		salt = @auth[:salt]
+# Server sends the challenge containing salt and B to client.
+response = session[:challenge]
 
-		# Server generates challenge for the client.
-		verifier = SRP::Verifier.new(prime_length)
-		session = verifier.get_challenge_and_proof(username, v, salt, A)
+# Server => Client: salt, B
 
-		# Server sends the challenge containing salt and B to client.
-		response = session[:challenge]
+# Client calculates M as a response to the challenge.
+client_M = client.process_challenge(username, password, salt, B)
 
-		# Server has to persist proof to authenticate the client response.
-		@proof = session[:proof]
+# Client => Server: username, M
 
+# Instantiate a new verifier on the server.
+verifier = SRP::Verifier.new(prime_length)
 
-	# Server => Client: salt, B
+# Verify challenge response M.
+# The Verifier state is passed in @proof.
+server_H_AMK = verifier.verify_session(@proof, client_M)
+# Is false if authentication failed.
 
-		# Client calculates M as a response to the challenge.
-		client_M = client.process_challenge(username, password, salt, B)
+# At this point, the client and server should have a common session key
+# that is secure (i.e. not known to an outside party).  To finish
+# authentication, they must prove to each other that their keys are
+# identical.
 
+# Server => Client: H(AMK)
 
-	# Client => Server: username, M
+client.verify(server_H_AMK) == true
 
-		# New verifier may be instantiated on the server.
-		verifier = SRP::Verifier.new(prime_length)
-
-		# Verify challenge response M.
-		# The Verifier state is passed in @proof.
-		server_H_AMK = verifier.verify_session(@proof, client_M)
-		# Is false if authentication failed.
-
-
-		# At this point, the client and server should have a common session key
-		# that is secure (i.e. not known to an outside party).  To finish
-		# authentication, they must prove to each other that their keys are
-		# identical.
-
-
-	# Server => Client: H(AMK)
-
-		client.verify(server_H_AMK) == true
-
+```
 
 ## Development
 

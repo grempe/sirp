@@ -31,7 +31,7 @@ module SRP
       }
     end
 
-    # returns H_AMK on success, None on failure
+    # returns H_AMK on success, false on failure
     # User -> Host:  M = H(H(N) xor H(g), H(I), s, A, B, K)
     # Host -> User:  H(A, M, K)
     def verify_session(proof, client_M)
