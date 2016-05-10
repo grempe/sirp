@@ -1,26 +1,28 @@
 # Secure Remote Password
 
-This is a pure Ruby implementation of the Secure Remote Password
-protocol (SRP-6a), a 'zero-knowledge' authentication system.
+This is a pure Ruby implementation of the
+[Secure Remote Password](http://srp.stanford.edu/) protocol (SRP-6a),
+a 'zero-knowledge' authentication system.
 
 SRP is an authentication method that allows the use of user names and passwords
 over an insecure network connection without revealing the password. If either the
 client lacks the user's password or the server lacks the proper verification
-key, the authentication will fail.
+key, the authentication will fail. This approach is much more secure than the
+vast majority of authentication systems in daily use since the password is
+***never*** sent over the wire, and is therefore impossible to intercept, and
+impossible to be revealed in a breach unless the verifier can be reversed. This
+attack would be of similar difficulty as deriving a private encryption key from
+its public key.
 
 Unlike other common challenge-response authentication protocols, such as
 Kerberos and SSL, SRP does not rely on an external infrastructure of trusted
 key servers or complex certificate management.
 
-References
-
-*	[http://srp.stanford.edu/](http://srp.stanford.edu/)
-
 ## Usage Example
 
-In this example the client and server steps are interleaved to demonstrate
-the responsibilities each side has in the protocol. See the `example` dir for
-simple working client and server implementations.
+In this example the client and server steps are interleaved for demonstration
+purposes. See the `example` dir for simple working client and server
+implementations.
 
 ``` ruby
 require 'srp'
