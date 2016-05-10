@@ -100,8 +100,7 @@ if __name__ == '__main__':
     NG_2048   = 1
     NG_4096   = 2
     NG_8192   = 3
-    if authenticate_over_http(host, username, password, ng_type=0):
+    if authenticate_over_http(host, username, password, ng_type=1):
         print "authentication successful"
     else:
         print "authentication failed"
-
