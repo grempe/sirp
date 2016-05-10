@@ -2,7 +2,7 @@ module SRP
   class Client
     attr_reader :N, :g, :k, :a, :A, :S, :K, :M, :H_AMK
 
-    def initialize(group = 1024)
+    def initialize(group = 2048)
       # select modulus (N) and generator (g)
       @N, @g = SRP.Ng group
       @k = SRP.calc_k(@N, @g)

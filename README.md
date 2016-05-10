@@ -27,7 +27,7 @@ require 'srp'
 
 username     = "user"
 password     = "password"
-prime_length = 1024
+prime_length = 2048
 
 # The salt and verifier should be stored on the server database.
 @auth = SRP::Verifier.new(prime_length).generate_userauth(username, password)
