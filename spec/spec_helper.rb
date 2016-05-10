@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'srp'
 
 # Allow use of the old deprecated rspec syntax
