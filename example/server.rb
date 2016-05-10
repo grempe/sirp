@@ -26,6 +26,11 @@ end
 
 user_verifiers.each { |h| users.update h }
 
+before do
+  # return all responses with this content type
+  content_type 'application/json'
+end
+
 # Upon identifying to the server, the client will receive the
 # salt stored on the server under the given username.
 post '/authenticate' do
@@ -37,9 +42,7 @@ post '/authenticate' do
     halt 401
   end
 
-  # Authentication is two-stage process.
-
-  # Stage 1
+  # Authentication Stage 1
   if params[:A]
     logger.info "#{username} requested authentication challenge A"
     aa = params[:A]
@@ -56,7 +59,7 @@ post '/authenticate' do
     # Server sends the challenge containing salt and B to client.
     return JSON.generate(session[:challenge])
 
-  # Stage 2
+  # Authentication Stage 2
   elsif params[:M]
     logger.info "#{username} provided challenge response M"
     client_M = params[:M]
@@ -76,6 +79,7 @@ post '/authenticate' do
       # Authenticated!
       logger.info "#{username} authenticated"
       logger.info "server H_AMK: #{server_H_AMK}"
+      logger.info "Client and server have negotiated shared secret K: #{verifier.K}"
       return JSON.generate(H_AMK: server_H_AMK)
     end
   end
