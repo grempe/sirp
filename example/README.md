@@ -1,22 +1,33 @@
-Test authentication mechanism:
+# Secure Remote Password : Example
 
-* Install required gems
-
-```
-cd example
-```
-
-* Launch Ruby server in Terminal 1
+## Install
 
 ```
-bundle install
-./server.rb
+$ cd example
+$ bundle install
 ```
 
-* Authenticate with Python client in Terminal 2
+## Run Server
 
-```
-python client.py <username> <password>
+```sh
+# run this in the first terminal window
+$ ./server.rb
 ```
 
-You can find correct username : password combinations in `server.rb`
+## Authenticate with Ruby Client
+
+```sh
+# run this in the second terminal window
+$ ./client.rb
+```
+
+## Authenticate with Python Client
+
+```sh
+# run this in the second terminal window
+
+# python client.py <username> <password>
+$ python client.py leonardo capricciosa
+```
+
+You can find other username : password combinations in `server.rb`
