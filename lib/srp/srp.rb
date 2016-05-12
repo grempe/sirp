@@ -5,12 +5,12 @@ module SRP
       [str].pack('H*').unpack('C*')
     end
 
-    def sha1_hex(h)
-      Digest::SHA1.hexdigest([h].pack('H*'))
+    def sha_hex(h, hash_klass)
+      hash_klass.hexdigest([h].pack('H*'))
     end
 
-    def sha1_str(s)
-      Digest::SHA1.hexdigest(s)
+    def sha_str(s, hash_klass = Digest::SHA1)
+      hash_klass.hexdigest(s)
     end
 
     # Modular Exponentiation
@@ -23,9 +23,9 @@ module SRP
       a.to_bn.mod_exp(b, m)
     end
 
-    # SHA1 hashing function with padding.
+    # Hashing function with padding.
     # Input is prefixed with 0 to meet N hex width.
-    def H(n, *a)
+    def H(hash_klass, n, *a)
       nlen = 2 * ((('%x' % [n]).length * 4 + 7) >> 3)
 
       hashin = a.map do |s|
@@ -37,26 +37,26 @@ module SRP
         '0' * (nlen - shex.length) + shex
       end.join('')
 
-      sha1_hex(hashin).hex % n
+      sha_hex(hashin, hash_klass).hex % n
     end
 
     # Multiplier parameter
     # k = H(N, g)   (in SRP-6a)
-    def calc_k(n, g)
-      H(n, n, g)
+    def calc_k(n, g, hash_klass)
+      H(hash_klass, n, n, g)
     end
 
     # Private key (derived from username, raw password and salt)
     # x = H(salt || H(username || ':' || password))
-    def calc_x(username, password, salt)
+    def calc_x(username, password, salt, hash_klass)
       spad = salt.length.odd? ? '0' : ''
-      sha1_hex(spad + salt + sha1_str([username, password].join(':'))).hex
+      sha_hex(spad + salt + sha_str([username, password].join(':'), hash_klass), hash_klass).hex
     end
 
     # Random scrambling parameter
     # u = H(A, B)
-    def calc_u(xaa, xbb, n)
-      H(n, xaa, xbb)
+    def calc_u(xaa, xbb, n, hash_klass)
+      H(hash_klass, n, xaa, xbb)
     end
 
     # Password verifier
@@ -88,8 +88,8 @@ module SRP
     end
 
     # M = H(A, B, K)
-    def calc_M(xaa, xbb, xkk)
-      digester = Digest::SHA1.new
+    def calc_M(xaa, xbb, xkk, hash_klass)
+      digester = hash_klass.new
       digester << SRP.hex_to_bytes(xaa).pack('C*')
       digester << SRP.hex_to_bytes(xbb).pack('C*')
       digester << SRP.hex_to_bytes(xkk).pack('C*')
@@ -97,9 +97,9 @@ module SRP
     end
 
     # H(A, M, K)
-    def calc_H_AMK(xaa, xmm, xkk)
+    def calc_H_AMK(xaa, xmm, xkk, hash_klass)
       byte_string = SRP.hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
-      sha1_str(byte_string).hex
+      sha_str(byte_string, hash_klass).hex
     end
 
     # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
@@ -114,6 +114,7 @@ module SRP
           FD5138FE 8376435B 9FC61D2F C0EB06E3
         ).join.hex
         @g = 2
+        @hash = Digest::SHA1
 
       when 1536
         @N = %w(
@@ -126,6 +127,7 @@ module SRP
           8CE7A28C 2442C6F3 15180F93 499A234D CF76E3FE D135F9BB
         ).join.hex
         @g = 2
+        @hash = Digest::SHA1
 
       when 2048
         @N = %w(
@@ -141,6 +143,7 @@ module SRP
           9E4AFF73
         ).join.hex
         @g = 2
+        @hash = Digest::SHA256
 
       when 3072
         @N = %w(
@@ -160,6 +163,7 @@ module SRP
           E0FD108E 4B82D120 A93AD2CA FFFFFFFF FFFFFFFF
         ).join.hex
         @g = 5
+        @hash = Digest::SHA256
 
       when 4096
         @N = %w(
@@ -184,6 +188,7 @@ module SRP
           FFFFFFFF FFFFFFFF
         ).join.hex
         @g = 5
+        @hash = Digest::SHA256
 
       when 6144
         @N = %w(
@@ -217,6 +222,7 @@ module SRP
           6DCC4024 FFFFFFFF FFFFFFFF
         ).join.hex
         @g = 5
+        @hash = Digest::SHA256
 
       when 8192
         @N = %w(
@@ -259,12 +265,12 @@ module SRP
           60C980DD 98EDD3DF FFFFFFFF FFFFFFFF
         ).join.hex
         @g = 19
-
+        @hash = Digest::SHA256
       else
         raise NotImplementedError, 'unknown group size'
       end
 
-      [@N, @g]
+      [@N, @g, @hash]
     end
     # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
   end

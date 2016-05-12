@@ -10,7 +10,7 @@ require 'logger'
 logger = Logger.new $stdout
 
 # Set prime N length - client has to use the same value!
-prime_length = 2048
+prime_length = 4096
 
 # Simulate a server side user DB
 users = {

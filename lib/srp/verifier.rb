@@ -1,11 +1,11 @@
 module SRP
   class Verifier
-    attr_reader :N, :g, :k, :A, :B, :b, :S, :K, :M, :H_AMK
+    attr_reader :N, :g, :k, :A, :B, :b, :S, :K, :M, :H_AMK, :hash
 
     def initialize(group = 2048)
       # select modulus (N) and generator (g)
-      @N, @g = SRP.Ng group
-      @k = SRP.calc_k(@N, @g)
+      @N, @g, @hash = SRP.Ng(group)
+      @k = SRP.calc_k(@N, @g, hash)
     end
 
     # Initial user creation for the persistance layer.
@@ -13,7 +13,7 @@ module SRP
     # Returns { <username>, <password verifier>, <salt> }
     def generate_userauth(username, password)
       @salt ||= SecureRandom.hex(10)
-      x = SRP.calc_x(username, password, @salt)
+      x = SRP.calc_x(username, password, @salt, hash)
       v = SRP.calc_v(x, @N, @g)
       { username: username, verifier: format('%x', v), salt: @salt }
     end
@@ -41,21 +41,21 @@ module SRP
       @b = proof[:b].to_i(16)
       v = proof[:v].to_i(16)
 
-      u = SRP.calc_u(@A, @B, @N)
+      u = SRP.calc_u(@A, @B, @N, hash)
 
       # SRP-6a safety check
       return false if u == 0
 
       # calculate session key
       @S = format('%x', SRP.calc_server_S(@A.to_i(16), @b, v, u, @N))
-      @K = SRP.sha1_hex(@S)
+      @K = SRP.sha_hex(@S, hash)
 
       # calculate match
-      @M = SRP.calc_M(@A, @B, @K)
+      @M = SRP.calc_M(@A, @B, @K, hash)
 
       if @M == client_M
         # authentication succeeded
-        @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K))
+        @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K, hash))
       else
         false
       end

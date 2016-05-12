@@ -12,7 +12,7 @@ logger = Logger.new $stdout
 server_addr  = 'http://localhost:4567/authenticate'
 username     = 'leonardo'
 password     = 'capricciosa'
-prime_length = 2048
+prime_length = 4096
 
 # The salt and verifier should be stored on the server database.
 # In this example code these values are hard-coded in server.rb

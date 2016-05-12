@@ -25,14 +25,25 @@ describe SRP do
       c.should == 1527229998585248450016808958343740453059
     end
 
+    it 'should hash correctly with H()' do
+      a = 2988348162058574136915891421498819466320163312926952423791023078876139
+      b = 2351399303373464486466122544523690094744975233415544072992656881240319
+      c = SRP.H(Digest::SHA1, a, b)
+      c.should == 870206349645559849154987479939336526106829135959
+    end
+
+    it 'should raise an error when h() is given invalid args' do
+      expect { SRP.H(Digest::SHA1, 1, '123456789abcdef') }.to raise_error(RuntimeError, 'Bit width does not match - client uses different prime')
+    end
+
     it 'should calculate k' do
-      k = SRP.calc_k(@N, @g)
+      k = SRP.calc_k(@N, @g, Digest::SHA1)
       ('%x' % k).should == 'dbe5dfe0704fee4c85ff106ecd38117d33bcfe50'
       ('%b' % k).length.should == 160
     end
 
     it 'should calculate x' do
-      x = SRP.calc_x(@username, @password, @salt)
+      x = SRP.calc_x(@username, @password, @salt, Digest::SHA1)
       ('%x' % x).should == 'bdd0a4e1c9df4082684d8d358b8016301b025375'
       ('%b' % x).length.should == 160
     end
@@ -47,7 +58,7 @@ describe SRP do
     it 'should calculate u' do
       aa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       bb = 'fbc56086bb51e26ee1a8287c0a7f3fd4e067e55beb8530b869b10b961957ff68'
-      u = SRP.calc_u(aa, bb, @N)
+      u = SRP.calc_u(aa, bb, @N, Digest::SHA1)
       ('%x' % u).should == 'c60b17ddf568dd5743d0e3ba5621646b742432c5'
       ('%b' % u).length.should == 160
     end
@@ -91,9 +102,9 @@ describe SRP do
       xaa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       xbb = 'fbc56086bb51e26ee1a8287c0a7f3fd4e067e55beb8530b869b10b961957ff68'
       xss = 'a606c182e364d2c15f9cdbeeeb63bb00c831d1da65eedc1414f21157d0312a5a'
-      xkk = SRP.sha1_hex(xss)
+      xkk = SRP.sha_hex(xss, Digest::SHA1)
       xkk.should == '5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67'
-      mm = SRP.calc_M(xaa, xbb, xkk)
+      mm = SRP.calc_M(xaa, xbb, xkk, Digest::SHA1)
       mm.should == '0c6de5c7892a71bf971d733a511c44940e227941'
     end
 
@@ -101,7 +112,7 @@ describe SRP do
       xaa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       xmm = 'd597503056af882d5b27b419302ac7b2ea9d7468'
       xkk = '5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67'
-      h_amk = SRP.calc_H_AMK(xaa, xmm, xkk)
+      h_amk = SRP.calc_H_AMK(xaa, xmm, xkk, Digest::SHA1)
       ('%x' % h_amk).should == '530fccc1c4aa82ae5c5cdfa8bdec987c6032451d'
     end
   end
@@ -120,6 +131,7 @@ describe SRP do
       ('%x' % nn).should == 'eeaf0ab9adb38dd69c33f80afa8fc5e86072618775ff3c0b9ea2314c9c256576d674df7496ea81d3383b4813d692c6e0e0d5d8e250b98be48e495c1d6089dad15dc7d7b46154d6b6ce8ef4ad69b15d4982559b297bcf1885c529f566660e57ec68edbc3c05726cc02fd4cbf4976eaa9afd5138fe8376435b9fc61d2fc0eb06e3'
       ('%b' % nn).length.should == 1024
       srp.g.should == 2
+      srp.hash.should == Digest::SHA1
     end
 
     it 'should be 1536 bits' do
@@ -127,6 +139,7 @@ describe SRP do
       nn = srp.N
       ('%b' % nn).length.should == 1536
       srp.g.should == 2
+      srp.hash.should == Digest::SHA1
     end
 
     it 'should be 2048 bits' do
@@ -134,6 +147,7 @@ describe SRP do
       nn = srp.N
       ('%b' % nn).length.should == 2048
       srp.g.should == 2
+      srp.hash.should == Digest::SHA256
     end
 
     it 'should be 3072 bits' do
@@ -141,6 +155,7 @@ describe SRP do
       nn = srp.N
       ('%b' % nn).length.should == 3072
       srp.g.should == 5
+      srp.hash.should == Digest::SHA256
     end
 
     it 'should be 4096 bits' do
@@ -148,6 +163,7 @@ describe SRP do
       nn = srp.N
       ('%b' % nn).length.should == 4096
       srp.g.should == 5
+      srp.hash.should == Digest::SHA256
     end
 
     it 'should be 6144 bits' do
@@ -155,13 +171,15 @@ describe SRP do
       nn = srp.N
       ('%b' % nn).length.should == 6144
       srp.g.should == 5
+      srp.hash.should == Digest::SHA256
     end
 
     it 'should be 8192 bits' do
       srp = SRP::Verifier.new(8192)
       nn = srp.N
       ('%b' % nn).length.should == 8192
-      srp.g.should == 19
+      srp.g.should == 19 # decimal, is 13 (hex) in jsrp lib which is 19 decimal
+      srp.hash.should == Digest::SHA256
     end
   end
 
@@ -250,7 +268,7 @@ describe SRP do
       # S is validated
       ss = '7f44592cc616e0d761b2d3309d513b69b386c35f3ed9b11e6d43f15799b673d6dcfa4117b4456af978458d62ad61e1a37be625f46d2a5bd9a50aae359e4541275f0f4bd4b4caed9d2da224b491231f905d47abd9953179aa608854b84a0e0c6195e73715932b41ab8d0d4a2977e7642163be6802c5907fb9e233b8c96e457314'
       # K = H(S)
-      kk = SRP.sha1_hex(ss)
+      kk = SRP.sha_hex(ss, Digest::SHA1)
       client_M = 'b2c4a9a9cf40fb2db67bbab4ebe36a50223e51e9'
       _proof = { A: aa, B: bb, b: @b, I: @username, s: @salt, v: v }
       srp = SRP::Verifier.new(1024)

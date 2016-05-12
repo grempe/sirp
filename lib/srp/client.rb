@@ -1,11 +1,11 @@
 module SRP
   class Client
-    attr_reader :N, :g, :k, :a, :A, :S, :K, :M, :H_AMK
+    attr_reader :N, :g, :k, :a, :A, :S, :K, :M, :H_AMK, :hash
 
     def initialize(group = 2048)
       # select modulus (N) and generator (g)
-      @N, @g = SRP.Ng group
-      @k = SRP.calc_k(@N, @g)
+      @N, @g, @hash = SRP.Ng(group)
+      @k = SRP.calc_k(@N, @g, hash)
     end
 
     def start_authentication
@@ -23,21 +23,21 @@ module SRP
       # SRP-6a safety check
       return false if (bb % @N) == 0
 
-      x = SRP.calc_x(username, password, xsalt)
-      u = SRP.calc_u(@A, xbb, @N)
+      x = SRP.calc_x(username, password, xsalt, hash)
+      u = SRP.calc_u(@A, xbb, @N, hash)
 
       # SRP-6a safety check
       return false if u == 0
 
       # calculate session key
       @S = format('%x', SRP.calc_client_S(bb, @a, @k, x, u, @N, @g))
-      @K = SRP.sha1_hex(@S)
+      @K = SRP.sha_hex(@S, hash)
 
       # calculate match
-      @M = SRP.calc_M(@A, xbb, @K)
+      @M = SRP.calc_M(@A, xbb, @K, hash)
 
       # calculate verifier
-      @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K))
+      @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K, hash))
 
       @M
     end
