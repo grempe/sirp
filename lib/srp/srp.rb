@@ -26,7 +26,7 @@ module SRP
     end
 
     def bigrand(bytes)
-      OpenSSL::Random.random_bytes(bytes).unpack('H*')[0]
+      SecureRandom.random_bytes(bytes).unpack('H*')[0]
     end
 
     # a^n (mod m)

@@ -1,5 +1,6 @@
-require 'openssl'
 require 'digest'
+require 'rbnacl/libsodium'
+require 'securer_randomer'
 require 'srp/srp'
 require 'srp/client'
 require 'srp/verifier'
