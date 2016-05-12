@@ -18,11 +18,11 @@ module SRP
     end
 
     def sha1_hex(h)
-      OpenSSL::Digest::SHA1.hexdigest([h].pack('H*'))
+      Digest::SHA1.hexdigest([h].pack('H*'))
     end
 
     def sha1_str(s)
-      OpenSSL::Digest::SHA1.hexdigest(s)
+      Digest::SHA1.hexdigest(s)
     end
 
     def bigrand(bytes)
