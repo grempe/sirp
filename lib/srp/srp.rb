@@ -122,6 +122,7 @@ module SRP
       sha1_str(byte_string).hex
     end
 
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
     def Ng(group)
       case group
       when 1024
@@ -285,5 +286,6 @@ module SRP
 
       [@N, @g]
     end
+    # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
   end
 end
