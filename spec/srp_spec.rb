@@ -17,6 +17,14 @@ describe SRP do
       @b = '8143e2f299852a05717427ea9d87c6146e747d0da6e95f4390264e55a43ae96'.to_i(16)
     end
 
+    it 'should calculate modular exponentiation correctly' do
+      a = 2988348162058574136915891421498819466320163312926952423791023078876139
+      b = 2351399303373464486466122544523690094744975233415544072992656881240319
+      m = 10 ** 40
+      c = SRP.mod_exp(a, b, m)
+      c.should == 1527229998585248450016808958343740453059
+    end
+
     it 'should calculate k' do
       k = SRP.calc_k(@N, @g)
       ('%x' % k).should == 'dbe5dfe0704fee4c85ff106ecd38117d33bcfe50'

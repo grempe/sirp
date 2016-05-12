@@ -32,15 +32,14 @@ module SRP
       SRP.rand_hex_str(num_bytes).hex
     end
 
-    # a^n (mod m)
-    def modpow(a, n, m)
-      r = 1
-      loop do
-        r = r * a % m if n[0] == 1
-        n >>= 1
-        break r if n == 0
-        a = a * a % m
-      end
+    # Modular Exponentiation
+    # https://en.m.wikipedia.org/wiki/Modular_exponentiation
+    # http://rosettacode.org/wiki/Modular_exponentiation#Ruby
+    #
+    # a^b (mod m)
+    def mod_exp(a, b, m)
+      # Use OpenSSL::BN#mod_exp
+      a.to_bn.mod_exp(b, m)
     end
 
     # SHA1 hashing function with padding.
@@ -82,29 +81,29 @@ module SRP
     # Password verifier
     # v = g^x (mod N)
     def calc_v(x, n, g)
-      modpow(g, x, n)
+      mod_exp(g, x, n)
     end
 
     # A = g^a (mod N)
     def calc_A(a, n, g)
-      modpow(g, a, n)
+      mod_exp(g, a, n)
     end
 
     # B = g^b + k v (mod N)
     def calc_B(b, k, v, n, g)
-      (modpow(g, b, n) + k * v) % n
+      (mod_exp(g, b, n) + k * v) % n
     end
 
     # Client secret
     # S = (B - (k * g^x)) ^ (a + (u * x)) % N
     def calc_client_S(bb, a, k, x, u, n, g)
-      modpow((bb - k * modpow(g, x, n)) % n, (a + x * u), n)
+      mod_exp((bb - k * mod_exp(g, x, n)) % n, (a + x * u), n)
     end
 
     # Server secret
     # S = (A * v^u) ^ b % N
     def calc_server_S(aa, b, v, u, n)
-      modpow((modpow(v, u, n) * aa), b, n)
+      mod_exp((mod_exp(v, u, n) * aa), b, n)
     end
 
     # M = H(A, B, K)
