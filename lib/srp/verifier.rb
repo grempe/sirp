@@ -12,7 +12,7 @@ module SRP
     # Not part of the authentication process.
     # Returns { <username>, <password verifier>, <salt> }
     def generate_userauth(username, password)
-      @salt ||= SRP.rand_hex_bytes(10)
+      @salt ||= SRP.rand_hex_str(10)
       x = SRP.calc_x(username, password, @salt)
       v = SRP.calc_v(x, @N, @g)
       { username: username, verifier: format('%x', v), salt: @salt }
