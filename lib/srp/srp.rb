@@ -24,10 +24,6 @@ module SRP
       Digest::SHA1.hexdigest(s)
     end
 
-    def rand_bignum(num_bytes)
-      SecureRandom.hex(num_bytes).hex
-    end
-
     # Modular Exponentiation
     # https://en.m.wikipedia.org/wiki/Modular_exponentiation
     # http://rosettacode.org/wiki/Modular_exponentiation#Ruby

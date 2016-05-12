@@ -65,7 +65,7 @@ module SRP
     # input verifier in hex
     def generate_B(xverifier)
       v = xverifier.to_i(16)
-      @b ||= SRP.rand_bignum(32)
+      @b ||= SecureRandom.hex(32).hex
       @B = format('%x', SRP.calc_B(@b, k, v, @N, @g))
     end
   end

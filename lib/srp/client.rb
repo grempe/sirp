@@ -10,7 +10,7 @@ module SRP
 
     def start_authentication
       # Generate a/A private and public components
-      @a ||= SRP.rand_bignum(32)
+      @a ||= SecureRandom.hex(32).hex
       @A = format('%x', SRP.calc_A(@a, @N, @g))
     end
 
