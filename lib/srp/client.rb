@@ -44,12 +44,8 @@ module SRP
       @H_AMK == server_HAMK
     end
 
-    def random_bignum
-      SRP.bigrand(32).hex
-    end
-
     def generate_A
-      @a ||= random_bignum
+      @a ||= SRP.rand_bignum
       @A = format('%x', SRP.calc_A(@a, @N, @g))
     end
   end

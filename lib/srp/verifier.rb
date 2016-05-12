@@ -12,7 +12,7 @@ module SRP
     # Not part of the authentication process.
     # Returns { <username>, <password verifier>, <salt> }
     def generate_userauth(username, password)
-      @salt ||= random_salt
+      @salt ||= SRP.rand_hex_bytes(10)
       x = SRP.calc_x(username, password, @salt)
       v = SRP.calc_v(x, @N, @g)
       { username: username, verifier: format('%x', v), salt: @salt }
@@ -62,19 +62,11 @@ module SRP
       return false
     end
 
-    def random_salt
-      format('%x', SRP.bigrand(10).hex)
-    end
-
-    def random_bignum
-      SRP.bigrand(32).hex
-    end
-
     # generates challenge
     # input verifier in hex
     def generate_B(xverifier)
       v = xverifier.to_i(16)
-      @b ||= random_bignum
+      @b ||= SRP.rand_bignum
       @B = format('%x', SRP.calc_B(@b, k, v, @N, @g))
     end
   end

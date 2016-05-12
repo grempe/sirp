@@ -1,6 +1,5 @@
 module SRP
   class << self
-
     # Convert a hex String to an Array of Bytes
     #
     # @param str [String] a hex String to convert
@@ -25,8 +24,12 @@ module SRP
       Digest::SHA1.hexdigest(s)
     end
 
-    def bigrand(bytes)
-      SecureRandom.random_bytes(bytes).unpack('H*')[0]
+    def rand_hex_bytes(num_bytes)
+      SecureRandom.random_bytes(num_bytes).unpack('H*')[0]
+    end
+
+    def rand_bignum
+      SRP.rand_hex_bytes(32).hex
     end
 
     # a^n (mod m)
