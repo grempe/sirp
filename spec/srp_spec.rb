@@ -86,16 +86,16 @@ describe SRP do
       xss = "a606c182e364d2c15f9cdbeeeb63bb00c831d1da65eedc1414f21157d0312a5a"
       xkk = SRP.sha1_hex(xss)
       xkk.should == "5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67"
-      mm = SRP.calc_M(@username, @salt, xaa, xbb, xkk, @N, @g)
-      ("%x" % mm).should == "2da30b225850c17720ed483ae6d04bcb67e4448e"
+      mm = SRP.calc_M(xaa, xbb, xkk)
+      mm.should == "0c6de5c7892a71bf971d733a511c44940e227941"
     end
 
     it "should calculate H(AMK)" do
       xaa = "b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e"
       xmm = "d597503056af882d5b27b419302ac7b2ea9d7468"
       xkk = "5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67"
-      h_amk = SRP.calc_H_AMK(xaa, xmm, xkk, @N, @g)
-      ("%x" % h_amk).should == "ffc955a9227f1bf1d87d66bebecba081f54dbb7a"
+      h_amk = SRP.calc_H_AMK(xaa, xmm, xkk)
+      ("%x" % h_amk).should == "530fccc1c4aa82ae5c5cdfa8bdec987c6032451d"
     end
   end
 
@@ -245,13 +245,13 @@ describe SRP do
       ss = "7f44592cc616e0d761b2d3309d513b69b386c35f3ed9b11e6d43f15799b673d6dcfa4117b4456af978458d62ad61e1a37be625f46d2a5bd9a50aae359e4541275f0f4bd4b4caed9d2da224b491231f905d47abd9953179aa608854b84a0e0c6195e73715932b41ab8d0d4a2977e7642163be6802c5907fb9e233b8c96e457314"
       # K = H(S)
       kk = SRP.sha1_hex(ss)
-      client_M = "52fb39fcacc2d909675ea3cf2b967980fc40ae0"
+      client_M = "b2c4a9a9cf40fb2db67bbab4ebe36a50223e51e9"
       _proof = {:A => aa, :B => bb, :b => @b,
         :I => @username, :s => @salt, :v => v}
       srp = SRP::Verifier.new(1024)
       srp.verify_session(_proof, client_M)
       srp.M.should == client_M
-      srp.H_AMK.should == "d3668cebb1cba4b3d4a4cd8edde9d89279b9d1e9"
+      srp.H_AMK.should == "a93d906ef5c0a15a8e525da6a271692d2e553c72"
     end
   end
 

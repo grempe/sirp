@@ -1,5 +1,22 @@
 module SRP
   class << self
+
+    # Convert a hex String to an Array of Bytes
+    #
+    # @param str [String] a hex String to convert
+    # @return [Array<Integer>] an Array of Integer Bytes
+    # @raise [ArgumentError] if the hex value is not an even length
+    def hex_to_bytes(str)
+      # clone so we don't destroy the original string passed in by slicing it.
+      strc = str.clone
+      bytes = []
+      len = strc.length
+      raise ArgumentError, "invalid hex value #{strc}, cannot be an odd length" if len.odd?
+      # slice off two hex chars at a time and convert them to an Integer Byte.
+      (len / 2).times { bytes << strc.slice!(0, 2).hex }
+      bytes
+    end
+
     def sha1_hex(h)
       OpenSSL::Digest::SHA1.hexdigest([h].pack('H*'))
     end
@@ -87,18 +104,19 @@ module SRP
       modpow((modpow(v, u, n) * aa), b, n)
     end
 
-    # M = H(H(N) xor H(g), H(I), s, A, B, K)
-    def calc_M(username, xsalt, xaa, xbb, xkk, n, g)
-      hn = sha1_hex(format('%x', n)).hex
-      hg = sha1_hex(format('%x', g)).hex
-      hxor = format('%x', (hn ^ hg))
-      hi = sha1_str(username)
-      H(n, hxor, hi, xsalt, xaa, xbb, xkk)
+    # M = H(A, B, K)
+    def calc_M(xaa, xbb, xkk)
+      digester = Digest::SHA1.new
+      digester << SRP.hex_to_bytes(xaa).pack('c*')
+      digester << SRP.hex_to_bytes(xbb).pack('c*')
+      digester << SRP.hex_to_bytes(xkk).pack('c*')
+      digester.hexdigest
     end
 
     # H(A, M, K)
-    def calc_H_AMK(xaa, xmm, xkk, n, g)
-      H(n, xaa, xmm, xkk)
+    def calc_H_AMK(xaa, xmm, xkk)
+      byte_string = SRP.hex_to_bytes([xaa, xmm, xkk].join('')).pack('c*')
+      sha1_str(byte_string).hex
     end
 
     def Ng(group)

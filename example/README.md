@@ -1,6 +1,6 @@
 # Secure Remote Password : Example
 
-## Install
+## Install Ruby Dependencies
 
 ```
 $ cd example
@@ -18,7 +18,17 @@ $ ./server.rb
 
 ```sh
 # run this in the second terminal window
+$ cd clients/ruby/
 $ ./client.rb
+```
+
+## Authenticate with JavaScript Client
+
+```sh
+# see the output of the JS client in the browser's JS console
+$ cd clients/javascript/
+$ npm install
+$ open index.html
 ```
 
 ## Authenticate with Python Client

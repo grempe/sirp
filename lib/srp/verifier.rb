@@ -51,11 +51,11 @@ module SRP
       @K = SRP.sha1_hex(@S)
 
       # calculate match
-      @M = format('%x', SRP.calc_M(username, xsalt, @A, @B, @K, @N, @g))
+      @M = SRP.calc_M(@A, @B, @K)
 
       if @M == client_M
         # authentication succeeded
-        @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K, @N, @g))
+        @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K))
         return @H_AMK
       end
 

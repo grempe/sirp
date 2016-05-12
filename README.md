@@ -18,6 +18,25 @@ Unlike other common challenge-response authentication protocols, such as
 Kerberos and SSL, SRP does not rely on an external infrastructure of trusted
 key servers or complex certificate management.
 
+## Compatibility
+
+This implementation has been tested for compatibility with the following SRP-6a
+compliant third-party libraries:
+
+[JSRP / JavaScript](https://github.com/alax/jsrp)
+
+Currently supported for SHA1 hash which is not the default. You can configure
+JSRP to use SHA1 using the following config directive:
+
+```js
+client.init({ username: username, password: password, length: 2048 }, function () {
+
+  client.srp.params.hash = 'sha1'
+
+  ...
+})
+```
+
 ## Usage Example
 
 In this example the client and server steps are interleaved for demonstration

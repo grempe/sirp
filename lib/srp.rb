@@ -1,4 +1,5 @@
 require 'openssl'
+require 'digest'
 require 'srp/srp'
 require 'srp/client'
 require 'srp/verifier'
