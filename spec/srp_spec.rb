@@ -264,27 +264,27 @@ describe SRP do
 
     it 'should generate A from random a' do
       srp = SRP::Client.new(1024)
-      aa1 = srp.generate_A
+      aa1 = srp.start_authentication
       ('%b' % aa1.to_i(16)).length.should >= 1000
-      ('%b' % srp.generate_A.to_i(16)).length.should >= 200
+      ('%b' % srp.start_authentication.to_i(16)).length.should >= 200
       srp = SRP::Client.new(1024)
-      aa2 = srp.generate_A
+      aa2 = srp.start_authentication
       ('%b' % aa2.to_i(16)).length.should >= 1000
-      ('%b' % srp.generate_A.to_i(16)).length.should >= 200
+      ('%b' % srp.start_authentication.to_i(16)).length.should >= 200
       aa1.should_not == aa2
     end
 
     it 'should calculate A' do
       srp = SRP::Client.new(1024)
       srp.set_a @a.to_i(16)
-      aa = srp.generate_A
+      aa = srp.start_authentication
       aa.should == '165366e23a10006a62fb8a0793757a299e2985103ad2e8cdee0cc37cac109f3f338ee12e2440eda97bfa7c75697709a5dc66faadca7806d43ea5839757d134ae7b28dd3333049198cc8d328998b8cd8352ff4e64b3bd5f08e40148d69b0843bce18cbbb30c7e4760296da5c92717fcac8bddc7875f55302e55d90a34226868d2'
     end
 
     it 'should calculate client session and key' do
       srp = SRP::Client.new(1024)
       srp.set_a @a.to_i(16)
-      aa = srp.generate_A # created in phase 1
+      aa = srp.start_authentication # created in phase 1
       bb = '56777d24af1121bd6af6aeb84238ff8d250122fe75ed251db0f47c289642ae7adb9ef319ce3ab23b6ecc97e5904749fc42f12bb016ecf39691db541f066667b8399bfa685c82b03ad8f92f75975ed086dbe0d470d4dd907ce11b19ee41b74aee72bd8445cde6b58c01f678e39ed9cd6b93c79382637df90777a96c10a768c510'
       mm = srp.process_challenge(@username, @password, @salt, bb)
       ss = srp.S
@@ -318,7 +318,7 @@ describe SRP do
       verifier = SRP::Verifier.new(1024)
       # phase 1
       # (client)
-      aa = client.generate_A
+      aa = client.start_authentication
       # (server)
       v = @auth[:verifier]
       salt = @auth[:salt]
@@ -340,7 +340,7 @@ describe SRP do
       verifier = SRP::Verifier.new(1024)
       # phase 1
       # (client)
-      aa = client.generate_A
+      aa = client.start_authentication
       # (server)
       v = @auth[:verifier]
       salt = @auth[:salt]

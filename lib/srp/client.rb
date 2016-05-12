@@ -9,7 +9,9 @@ module SRP
     end
 
     def start_authentication
-      generate_A
+      # Generate a/A private and public components
+      @a ||= SRP.rand_bignum(32)
+      @A = format('%x', SRP.calc_A(@a, @N, @g))
     end
 
     # Process initiated authentication challenge.
@@ -42,11 +44,6 @@ module SRP
     def verify(server_HAMK)
       return false unless @H_AMK
       @H_AMK == server_HAMK
-    end
-
-    def generate_A
-      @a ||= SRP.rand_bignum
-      @A = format('%x', SRP.calc_A(@a, @N, @g))
     end
   end
 end
