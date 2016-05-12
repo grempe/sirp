@@ -13,11 +13,11 @@ end
 # Monkey-patch API to define a, b and salt presetters
 module SRP
   class Verifier
-    def set_b val
+    def set_b(val)
       @b = val
     end
 
-    def set_salt val
+    def set_salt(val)
       @salt = val
     end
   end
@@ -25,7 +25,7 @@ end
 
 module SRP
   class Client
-    def set_a val
+    def set_a(val)
       @a = val
     end
   end
