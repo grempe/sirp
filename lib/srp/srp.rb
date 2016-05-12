@@ -24,11 +24,11 @@ module SRP
       Digest::SHA1.hexdigest(s)
     end
 
-    def rand_hex_str(num_bytes = 32)
+    def rand_hex_str(num_bytes)
       SecureRandom.random_bytes(num_bytes).unpack('H*')[0]
     end
 
-    def rand_bignum(num_bytes = 32)
+    def rand_bignum(num_bytes)
       SRP.rand_hex_str(num_bytes).hex
     end
 

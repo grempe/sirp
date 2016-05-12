@@ -21,3 +21,6 @@ Style/FormatString:
   Description: 'Enforce the use of Kernel#sprintf, Kernel#format or String#%.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#sprintf'
   Enabled: false
+
+Style/MethodName:
+  Enabled: false

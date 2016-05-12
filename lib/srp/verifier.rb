@@ -25,6 +25,7 @@ module SRP
       # SRP-6a safety check
       return false if (xaa.to_i(16) % @N) == 0
       generate_B(xverifier)
+
       {
         challenge: { B: @B, salt: xsalt },
         proof: { A: xaa, B: @B, b: format('%x', @b), I: username, s: xsalt, v: xverifier }
@@ -38,11 +39,10 @@ module SRP
       @A = proof[:A]
       @B = proof[:B]
       @b = proof[:b].to_i(16)
-      username = proof[:I]
-      xsalt = proof[:s]
       v = proof[:v].to_i(16)
 
       u = SRP.calc_u(@A, @B, @N)
+
       # SRP-6a safety check
       return false if u == 0
 
@@ -56,17 +56,16 @@ module SRP
       if @M == client_M
         # authentication succeeded
         @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K))
-        return @H_AMK
+      else
+        false
       end
-
-      return false
     end
 
     # generates challenge
     # input verifier in hex
     def generate_B(xverifier)
       v = xverifier.to_i(16)
-      @b ||= SRP.rand_bignum
+      @b ||= SRP.rand_bignum(32)
       @B = format('%x', SRP.calc_B(@b, k, v, @N, @g))
     end
   end

@@ -19,6 +19,7 @@ module SRP
     # Salt and B should be given in hex.
     def process_challenge(username, password, xsalt, xbb)
       bb = xbb.to_i(16)
+
       # SRP-6a safety check
       return false if (bb % @N) == 0
 
