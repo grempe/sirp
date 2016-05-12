@@ -1,3 +1,4 @@
+require 'openssl'
 require 'digest'
 require 'rbnacl/libsodium'
 require 'securer_randomer'
