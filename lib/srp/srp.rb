@@ -1,19 +1,8 @@
 module SRP
   class << self
-    # Convert a hex String to an Array of Bytes
-    #
-    # @param str [String] a hex String to convert
-    # @return [Array<Integer>] an Array of Integer Bytes
-    # @raise [ArgumentError] if the hex value is not an even length
+    # http://stackoverflow.com/questions/3772410/convert-a-string-of-0-f-into-a-byte-array-in-ruby
     def hex_to_bytes(str)
-      # clone so we don't destroy the original string passed in by slicing it.
-      strc = str.clone
-      bytes = []
-      len = strc.length
-      raise ArgumentError, "invalid hex value #{strc}, cannot be an odd length" if len.odd?
-      # slice off two hex chars at a time and convert them to an Integer Byte.
-      (len / 2).times { bytes << strc.slice!(0, 2).hex }
-      bytes
+      [str].pack('H*').unpack('C*')
     end
 
     def sha1_hex(h)
@@ -101,15 +90,15 @@ module SRP
     # M = H(A, B, K)
     def calc_M(xaa, xbb, xkk)
       digester = Digest::SHA1.new
-      digester << SRP.hex_to_bytes(xaa).pack('c*')
-      digester << SRP.hex_to_bytes(xbb).pack('c*')
-      digester << SRP.hex_to_bytes(xkk).pack('c*')
+      digester << SRP.hex_to_bytes(xaa).pack('C*')
+      digester << SRP.hex_to_bytes(xbb).pack('C*')
+      digester << SRP.hex_to_bytes(xkk).pack('C*')
       digester.hexdigest
     end
 
     # H(A, M, K)
     def calc_H_AMK(xaa, xmm, xkk)
-      byte_string = SRP.hex_to_bytes([xaa, xmm, xkk].join('')).pack('c*')
+      byte_string = SRP.hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
       sha1_str(byte_string).hex
     end
 
