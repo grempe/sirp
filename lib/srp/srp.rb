@@ -261,7 +261,7 @@ module SRP
         @g = 19
 
       else
-        raise NotImplementedError
+        raise NotImplementedError, 'unknown group size'
       end
 
       [@N, @g]

@@ -110,6 +110,10 @@ describe SRP do
   ### Values are from vectors listed in RFC 5054 Appendix B.
   ###
   context '@predefined-Ng' do
+    it 'should raise an error on unknown verifier group size' do
+      expect { SRP::Verifier.new(1234) }.to raise_error(NotImplementedError, 'unknown group size')
+    end
+
     it 'should be 1024 bits' do
       srp = SRP::Verifier.new(1024)
       nn = srp.N
