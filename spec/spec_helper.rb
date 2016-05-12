@@ -12,12 +12,11 @@ end
 
 require 'srp'
 
-# Allow use of the old deprecated rspec syntax
-# for now. See:
-# http://rspec.info/blog/2012/06/rspecs-new-expectation-syntax/
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
-    c.syntax = :should
+    # c.syntax = :expect          # disables `should`
+    # c.syntax = :should          # disables `expect`
+    c.syntax = [:should, :expect] # default, enables both `should` and `expect`
   end
 end
 
