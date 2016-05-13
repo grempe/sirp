@@ -104,7 +104,7 @@ module SRP
 
     def num_to_hex(num)
       hex_str = num.to_s(16)
-      even_hex_str = hex_str.length % 2 == 1 ? '0' + hex_str : hex_str
+      even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
       even_hex_str.downcase
     end
 
