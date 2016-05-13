@@ -11,7 +11,7 @@ module SRP
     def start_authentication
       # Generate a/A private and public components
       @a ||= SecureRandom.hex(32).hex
-      @A = format('%x', SRP.calc_A(@a, @N, @g))
+      @A = SRP.num_to_hex(SRP.calc_A(@a, @N, @g))
     end
 
     # Process initiated authentication challenge.
@@ -30,14 +30,14 @@ module SRP
       return false if u == 0
 
       # calculate session key
-      @S = format('%x', SRP.calc_client_S(bb, @a, @k, x, u, @N, @g))
+      @S = SRP.num_to_hex(SRP.calc_client_S(bb, @a, @k, x, u, @N, @g))
       @K = SRP.sha_hex(@S, hash)
 
       # calculate match
       @M = SRP.calc_M(@A, xbb, @K, hash)
 
       # calculate verifier
-      @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K, hash))
+      @H_AMK = SRP.num_to_hex(SRP.calc_H_AMK(@A, @M, @K, hash))
 
       @M
     end

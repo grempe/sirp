@@ -30,7 +30,7 @@ module SRP
 
       hashin = a.map do |s|
         next unless s
-        shex = (s.class == String) ? s : format('%x', s)
+        shex = (s.class == String) ? s : SRP.num_to_hex(s)
         if shex.length > nlen
           raise 'Bit width does not match - client uses different prime'
         end
@@ -100,6 +100,12 @@ module SRP
     def calc_H_AMK(xaa, xmm, xkk, hash_klass)
       byte_string = SRP.hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
       sha_str(byte_string, hash_klass).hex
+    end
+
+    def num_to_hex(num)
+      hex_str = num.to_s(16)
+      even_hex_str = hex_str.length % 2 == 1 ? '0' + hex_str : hex_str
+      even_hex_str.downcase
     end
 
     # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity

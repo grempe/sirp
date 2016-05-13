@@ -15,7 +15,7 @@ module SRP
       @salt ||= SecureRandom.hex(10)
       x = SRP.calc_x(username, password, @salt, hash)
       v = SRP.calc_v(x, @N, @g)
-      { username: username, verifier: format('%x', v), salt: @salt }
+      { username: username, verifier: SRP.num_to_hex(v), salt: @salt }
     end
 
     # Authentication phase 1 - create challenge.
@@ -28,7 +28,7 @@ module SRP
 
       {
         challenge: { B: @B, salt: xsalt },
-        proof: { A: xaa, B: @B, b: format('%x', @b), I: username, s: xsalt, v: xverifier }
+        proof: { A: xaa, B: @B, b: SRP.num_to_hex(@b), I: username, s: xsalt, v: xverifier }
       }
     end
 
@@ -47,7 +47,7 @@ module SRP
       return false if u == 0
 
       # calculate session key
-      @S = format('%x', SRP.calc_server_S(@A.to_i(16), @b, v, u, @N))
+      @S = SRP.num_to_hex(SRP.calc_server_S(@A.to_i(16), @b, v, u, @N))
       @K = SRP.sha_hex(@S, hash)
 
       # calculate match
@@ -55,7 +55,7 @@ module SRP
 
       if @M == client_M
         # authentication succeeded
-        @H_AMK = format('%x', SRP.calc_H_AMK(@A, @M, @K, hash))
+        @H_AMK = SRP.num_to_hex(SRP.calc_H_AMK(@A, @M, @K, hash))
       else
         false
       end
@@ -66,7 +66,7 @@ module SRP
     def generate_B(xverifier)
       v = xverifier.to_i(16)
       @b ||= SecureRandom.hex(32).hex
-      @B = format('%x', SRP.calc_B(@b, k, v, @N, @g))
+      @B = SRP.num_to_hex(SRP.calc_B(@b, k, v, @N, @g))
     end
   end
 end
