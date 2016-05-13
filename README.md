@@ -28,6 +28,90 @@ Unlike other common challenge-response authentication protocols, such as
 Kerberos and SSL, SiRP does not rely on an external infrastructure of trusted
 key servers or complex certificate management.
 
+## Documentation
+
+There is pretty extensive inline documentation. You can view the latest
+auto-generated docs at [http://www.rubydoc.info/gems/sirp](http://www.rubydoc.info/gems/sirp)
+
+You can check my documentation quality score at
+[http://inch-ci.org/github/grempe/sirp](http://inch-ci.org/github/grempe/sirp?branch=master)
+
+## Supported Platforms
+
+SiRP is continuously integration tested on the following Ruby VMs:
+
+* MRI 2.1, 2.2, 2.3
+
+It may work on others as well.
+
+## Installation
+
+Add this line to your application's `Gemfile`:
+
+```ruby
+gem 'sirp', '~> 2.0'
+```
+
+And then execute:
+```sh
+$ bundle
+```
+
+Or install it yourself as:
+
+```sh
+$ gem install sirp
+```
+
+### Installation Security : Signed Ruby Gem
+
+The SiRP gem is cryptographically signed. To be sure the gem you install hasn’t
+been tampered with you can install it using the following method:
+
+Add my public key (if you haven’t already) as a trusted certificate
+
+```
+# Caveat: Gem certificates are trusted globally, such that adding a
+# cert.pem for one gem automatically trusts all gems signed by that cert.
+gem cert --add <(curl -Ls https://raw.github.com/grempe/sirp/master/certs/gem-public_cert_grempe.pem)
+```
+
+To install, it is possible to specify either `HighSecurity` or `MediumSecurity`
+mode. Since the `sirp` gem depends on one or more gems that are not cryptographically
+signed you will likely need to use `MediumSecurity`. You should receive a warning
+if any signed gem does not match its signature.
+
+```
+# All dependent gems must be signed and verified.
+gem install sirp -P HighSecurity
+```
+
+```
+# All signed dependent gems must be verified.
+gem install sirp -P MediumSecurity
+```
+
+```
+# Same as above, except Bundler only recognizes
+# the long --trust-policy flag, not the short -P
+bundle --trust-policy MediumSecurity
+```
+
+You can [learn more about security and signed Ruby Gems](http://guides.rubygems.org/security/).
+
+### Installation Security : Signed Git Commits
+
+Most, if not all, of the commits and tags to the repository for this code are
+signed with my PGP/GPG code signing key. I have uploaded my code signing public
+keys to GitHub and you can now verify those signatures with the GitHub UI.
+See [this list of commits](https://github.com/grempe/sirp/commits/master)
+and look for the `Verified` tag next to each commit. You can click on that tag
+for additional information.
+
+You can also clone the repository and verify the signatures locally using your
+own GnuPG installation. You can find my certificates and read about how to conduct
+this verification at [https://www.rempe.us/keys/](https://www.rempe.us/keys/).
+
 ## Compatibility
 
 This implementation has been tested for compatibility with the following SRP-6a
@@ -115,3 +199,33 @@ run `bundle exec rake test` to run the tests. You can also run `bin/console` for
 interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
+
+### Contributing
+
+Bug reports and pull requests are welcome on GitHub
+at [https://github.com/grempe/sirp](https://github.com/grempe/sirp). This
+project is intended to be a safe, welcoming space for collaboration, and
+contributors are expected to adhere to the
+[Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+## Legal
+
+### Copyright
+
+(c) 2016 Glenn Rempe <[glenn@rempe.us](mailto:glenn@rempe.us)> ([https://www.rempe.us/](https://www.rempe.us/))
+
+(c) 2012 Mikael Lammentausta
+
+### License
+
+The gem is available as open source under the terms of
+the [BSD 3-clause "New" or "Revised" License](https://spdx.org/licenses/BSD-3-Clause.html).
+
+### Warranty
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+either express or implied. See the LICENSE.txt file for the
+specific language governing permissions and limitations under
+the License.

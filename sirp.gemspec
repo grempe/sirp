@@ -11,6 +11,12 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.1.0'
 
+  cert = File.expand_path('~/.gem-certs/gem-private_key_grempe.pem')
+  if cert && File.exist?(cert)
+    spec.signing_key = cert
+    spec.cert_chain = ['certs/gem-public_cert_grempe.pem']
+  end
+
   spec.summary       = 'Secure (interoperable) Remote Password Auth (SRP-6a)'
   spec.description   = <<-EOF
     A Ruby implementation of the Secure Remote Password protocol (SRP-6a).
