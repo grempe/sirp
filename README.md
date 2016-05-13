@@ -25,22 +25,10 @@ compliant third-party libraries:
 
 [JSRP / JavaScript](https://github.com/alax/jsrp)
 
-Currently supported for SHA1 hash which is not the default. You can configure
-JSRP to use SHA1 using the following config directive:
-
-```js
-client.init({ username: username, password: password, length: 2048 }, function () {
-
-  client.srp.params.hash = 'sha1'
-
-  ...
-})
-```
-
 ## Usage Example
 
 In this example the client and server steps are interleaved for demonstration
-purposes. See the `example` dir for simple working client and server
+purposes. See the `examples` dir for simple working client and server
 implementations.
 
 ``` ruby
@@ -104,7 +92,7 @@ client.verify(server_H_AMK) == true
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then,
-run `rake test` to run the tests. You can also run `bin/console` for an
+run `bundle exec rake test` to run the tests. You can also run `bin/console` for an
 interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.

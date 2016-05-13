@@ -7,5 +7,5 @@
 /pkg/
 /spec/reports/
 /tmp/
-/example/.bundle/
-/example/Gemfile.lock
+/examples/.bundle/
+/examples/Gemfile.lock

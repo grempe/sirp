@@ -3,7 +3,7 @@
 ## Install Ruby Dependencies
 
 ```
-$ cd example
+$ cd examples
 $ bundle install
 ```
 
