@@ -1,4 +1,4 @@
-module SRP
+module SIRP
   class << self
     # http://stackoverflow.com/questions/3772410/convert-a-string-of-0-f-into-a-byte-array-in-ruby
     def hex_to_bytes(str)
@@ -30,7 +30,7 @@ module SRP
 
       hashin = a.map do |s|
         next unless s
-        shex = (s.class == String) ? s : SRP.num_to_hex(s)
+        shex = (s.class == String) ? s : num_to_hex(s)
         if shex.length > nlen
           raise 'Bit width does not match - client uses different prime'
         end
@@ -41,7 +41,7 @@ module SRP
     end
 
     # Multiplier parameter
-    # k = H(N, g)   (in SRP-6a)
+    # k = H(N, g)   (in SIRP-6a)
     def calc_k(n, g, hash_klass)
       H(hash_klass, n, n, g)
     end
@@ -90,15 +90,15 @@ module SRP
     # M = H(A, B, K)
     def calc_M(xaa, xbb, xkk, hash_klass)
       digester = hash_klass.new
-      digester << SRP.hex_to_bytes(xaa).pack('C*')
-      digester << SRP.hex_to_bytes(xbb).pack('C*')
-      digester << SRP.hex_to_bytes(xkk).pack('C*')
+      digester << hex_to_bytes(xaa).pack('C*')
+      digester << hex_to_bytes(xbb).pack('C*')
+      digester << hex_to_bytes(xkk).pack('C*')
       digester.hexdigest
     end
 
     # H(A, M, K)
     def calc_H_AMK(xaa, xmm, xkk, hash_klass)
-      byte_string = SRP.hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
+      byte_string = hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
       sha_str(byte_string, hash_klass).hex
     end
 

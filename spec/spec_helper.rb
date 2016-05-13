@@ -10,7 +10,7 @@ else
   require 'coco'
 end
 
-require 'srp'
+require 'sirp'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
@@ -21,7 +21,7 @@ RSpec.configure do |config|
 end
 
 # Monkey-patch API to define a, b and salt presetters
-module SRP
+module SIRP
   class Verifier
     def set_b(val)
       @b = val
@@ -33,7 +33,7 @@ module SRP
   end
 end
 
-module SRP
+module SIRP
   class Client
     def set_a(val)
       @a = val

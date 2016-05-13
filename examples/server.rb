@@ -5,7 +5,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'sinatra'
 require 'json'
-require 'srp'
+require 'sirp'
 require 'logger'
 logger = Logger.new $stdout
 
@@ -24,7 +24,7 @@ users = {
 }
 
 user_verifiers = users.map do |username, password|
-  { username => SRP::Verifier.new(prime_length).generate_userauth(username, password) }
+  { username => SIRP::Verifier.new(prime_length).generate_userauth(username, password) }
 end
 
 user_verifiers.each { |h| users.update h }
@@ -52,7 +52,7 @@ post '/authenticate' do
     salt = user[:salt]
 
     # Server generates B, saves A and B to database
-    verifier = SRP::Verifier.new(prime_length)
+    verifier = SIRP::Verifier.new(prime_length)
     session = verifier.get_challenge_and_proof(username, v, salt, aa)
 
     logger.info 'P1 : Server persisting user verifier (proof)'
@@ -72,7 +72,7 @@ post '/authenticate' do
     proof = user[:session_proof]
 
     logger.info 'P2 : Verifying client/server M match, generating H_AMK'
-    verifier = SRP::Verifier.new(prime_length)
+    verifier = SIRP::Verifier.new(prime_length)
     server_H_AMK = verifier.verify_session(proof, client_M)
     logger.info "P2 : server M: #{verifier.M}"
 

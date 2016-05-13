@@ -5,7 +5,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'http'
 require 'json'
-require 'srp'
+require 'sirp'
 require 'logger'
 logger = Logger.new $stdout
 
@@ -16,12 +16,12 @@ prime_length = 4096
 
 # The salt and verifier should be stored on the server database.
 # In this example code these values are hard-coded in server.rb
-# @auth = SRP::Verifier.new(prime_length).generate_userauth(username, password)
+# @auth = SIRP::Verifier.new(prime_length).generate_userauth(username, password)
 # @auth is a hash containing :username, :verifier and :salt
 
 logger.info 'Start authentication'
 
-client = SRP::Client.new(prime_length)
+client = SIRP::Client.new(prime_length)
 A = client.start_authentication
 
 logger.info "Sending username: '#{username}' and A: '#{A}' to server"

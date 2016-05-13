@@ -1,4 +1,4 @@
-# Secure Remote Password : Example
+# SiRP : Secure (interoperable) Remote Password : Example
 
 ## Install Ruby Dependencies
 

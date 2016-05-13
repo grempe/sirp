@@ -2,7 +2,6 @@
   - lib
 :exclude:
   - spec
-  - lib/srp/version.rb
-  - lib/srp-rb.rb
+  - lib/sirp/version.rb
 :theme: dark
 :show_link_in_terminal: true

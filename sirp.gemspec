@@ -1,24 +1,24 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'srp/version'
+require 'sirp/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'srp-rb'
-  spec.version       = SRP::VERSION
-  spec.authors       = ['lamikae']
-  spec.email         = ['']
+  spec.name          = 'sirp'
+  spec.version       = SIRP::VERSION
+  spec.authors       = ['Glenn Rempe', 'lamikae']
+  spec.email         = ['glenn@rempe.us']
 
   spec.required_ruby_version = '>= 2.1.0'
 
-  spec.summary       = 'Secure Remote Password protocol SRP-6a'
+  spec.summary       = 'Secure (interoperable) Remote Password Auth (SRP-6a)'
   spec.description   = <<-EOF
-    Ruby implementation of the Secure Remote Password protocol (SRP-6a).
-    SRP is a cryptographically strong authentication protocol for
+    A Ruby implementation of the Secure Remote Password protocol (SRP-6a).
+    SiRP is a cryptographically strong authentication protocol for
     password-based, mutual authentication over an insecure network connection.
   EOF
 
-  spec.homepage      = 'https://github.com/lamikae/srp-rb'
+  spec.homepage      = 'https://github.com/grempe/sirp'
 
   # http://spdx.org/licenses/BSD-3-Clause.html
   spec.license       = 'BSD-3-Clause'
@@ -29,8 +29,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # See : https://bugs.ruby-lang.org/issues/9569
-  spec.add_dependency 'rbnacl-libsodium', '~> 1.0'
-  spec.add_dependency 'securer_randomer', '~> 0.1.0'
+  spec.add_runtime_dependency 'rbnacl-libsodium', '~> 1.0'
+  spec.add_runtime_dependency 'securer_randomer', '~> 0.1.0'
 
   spec.add_development_dependency 'bundler', '~> 1.12'
   spec.add_development_dependency 'rake', '~> 11.0'

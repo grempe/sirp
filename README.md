@@ -1,10 +1,10 @@
-# Secure Remote Password
+# SiRP : Secure (interoperable) Remote Password Authentication
 
 This is a pure Ruby implementation of the
 [Secure Remote Password](http://srp.stanford.edu/) protocol (SRP-6a),
-a 'zero-knowledge' authentication system.
+which is a 'zero-knowledge' mutual authentication system.
 
-SRP is an authentication method that allows the use of user names and passwords
+SiRP is an authentication method that allows the use of user names and passwords
 over an insecure network connection without revealing the password. If either the
 client lacks the user's password or the server lacks the proper verification
 key, the authentication will fail. This approach is much more secure than the
@@ -15,7 +15,7 @@ attack would be of similar difficulty as deriving a private encryption key from
 its public key.
 
 Unlike other common challenge-response authentication protocols, such as
-Kerberos and SSL, SRP does not rely on an external infrastructure of trusted
+Kerberos and SSL, SiRP does not rely on an external infrastructure of trusted
 key servers or complex certificate management.
 
 ## Compatibility
@@ -32,19 +32,19 @@ purposes. See the `examples` dir for simple working client and server
 implementations.
 
 ``` ruby
-require 'srp'
+require 'sirp'
 
-username     = "user"
-password     = "password"
+username     = 'user'
+password     = 'password'
 prime_length = 2048
 
 # The salt and verifier should be stored on the server database.
-@auth = SRP::Verifier.new(prime_length).generate_userauth(username, password)
+@auth = SIRP::Verifier.new(prime_length).generate_userauth(username, password)
 # @auth is a hash containing :username, :verifier and :salt
 
 # ~~~ Begin Authentication ~~~
 
-client = SRP::Client.new(prime_length)
+client = SIRP::Client.new(prime_length)
 A = client.start_authentication
 
 # Client => Server: username, A
@@ -54,7 +54,7 @@ v    = @auth[:verifier]
 salt = @auth[:salt]
 
 # Server generates challenge for the client.
-verifier = SRP::Verifier.new(prime_length)
+verifier = SIRP::Verifier.new(prime_length)
 session = verifier.get_challenge_and_proof(username, v, salt, A)
 
 # Server has to persist proof to authenticate the client response later.
@@ -71,7 +71,7 @@ client_M = client.process_challenge(username, password, salt, B)
 # Client => Server: username, M
 
 # Instantiate a new verifier on the server.
-verifier = SRP::Verifier.new(prime_length)
+verifier = SIRP::Verifier.new(prime_length)
 
 # Verify challenge response M.
 # The Verifier state is passed in @proof.
@@ -88,6 +88,15 @@ server_H_AMK = verifier.verify_session(@proof, client_M)
 client.verify(server_H_AMK) == true
 
 ```
+
+## History
+
+This gem is a fork of the [lamikae/srp-rb](https://github.com/lamikae/srp-rb)
+repository created by Mikael Lammentausta [@lamikae](https://github.com/lamikae).
+Significant changes were needed for my use-case which demanded breaking changes
+for the sake of greater interoperability. With these factors in mind, a hard
+fork seemed the most appropriate path to take. Much credit is due to Mikael for
+his original implementation.
 
 ## Development
 
