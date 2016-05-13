@@ -21,6 +21,10 @@ $(document).ready(function () {
       // sendSaltToServer(result.salt)
       // sendVerifierToServer(result.verifier)
 
+      if (err) {
+         console.log(err.stack);
+       }
+
       var A = client.getPublicKey()
 
       // Auth Phase 1
