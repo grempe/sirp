@@ -29,6 +29,7 @@ user_verifiers.each { |h| users.update h }
 before do
   # return all responses with this content type
   content_type 'application/json'
+  response['Access-Control-Allow-Origin'] = '*'
 end
 
 # Upon identifying to the server, the client will receive the
