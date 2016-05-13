@@ -9,7 +9,7 @@ module SIRP
       hash_klass.hexdigest([h].pack('H*'))
     end
 
-    def sha_str(s, hash_klass = Digest::SHA1)
+    def sha_str(s, hash_klass)
       hash_klass.hexdigest(s)
     end
 
