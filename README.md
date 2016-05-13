@@ -1,5 +1,15 @@
 # SiRP : Secure (interoperable) Remote Password Authentication
 
+[![Gem Version](https://badge.fury.io/rb/sirp.svg)](https://badge.fury.io/rb/sirp)
+[![Dependency Status](https://gemnasium.com/badges/github.com/grempe/sirp.svg)](https://gemnasium.com/github.com/grempe/sirp)
+[![Build Status](https://travis-ci.org/grempe/sirp.svg?branch=master)](https://travis-ci.org/grempe/sirp)
+[![Coverage Status](https://coveralls.io/repos/github/grempe/sirp/badge.svg?branch=master)](https://coveralls.io/github/grempe/sirp?branch=master)
+[![Code Climate](https://codeclimate.com/github/grempe/sirp/badges/gpa.svg)](https://codeclimate.com/github/grempe/sirp)
+[![Inline docs](http://inch-ci.org/github/grempe/sirp.svg?branch=master)](http://inch-ci.org/github/grempe/sirp)
+
+Ruby Docs : [http://www.rubydoc.info/gems/sirp](http://www.rubydoc.info/gems/sirp)
+
+
 This is a pure Ruby implementation of the
 [Secure Remote Password](http://srp.stanford.edu/) protocol (SRP-6a),
 which is a 'zero-knowledge' mutual authentication system.
