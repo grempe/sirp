@@ -9,6 +9,9 @@ require 'srp'
 require 'logger'
 logger = Logger.new $stdout
 
+# Sinatra : Use Puma
+configure { set :server, :puma }
+
 # Set prime N length - client has to use the same value!
 prime_length = 4096
 
