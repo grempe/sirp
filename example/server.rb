@@ -12,7 +12,7 @@ logger = Logger.new $stdout
 # Set prime N length - client has to use the same value!
 prime_length = 4096
 
-# Simulate a server side user DB
+# Simulated DB
 users = {
   leonardo: 'capricciosa',
   raphael: 'quattro formaggi',
@@ -27,13 +27,10 @@ end
 user_verifiers.each { |h| users.update h }
 
 before do
-  # return all responses with this content type
   content_type 'application/json'
   response['Access-Control-Allow-Origin'] = '*'
 end
 
-# Upon identifying to the server, the client will receive the
-# salt stored on the server under the given username.
 post '/authenticate' do
   username = params[:username]
   user = users[username.to_sym]
@@ -43,9 +40,10 @@ post '/authenticate' do
     halt 401
   end
 
-  # Authentication Stage 1
   if params[:A]
-    logger.info "#{username} requested authentication challenge A"
+    logger.info 'P1 : Starting'
+    logger.info "P1 : Server received username '#{username}' and A"
+    logger.info "P1 : Client A : #{params[:A]}"
     aa = params[:A]
     v = user[:verifier]
     salt = user[:salt]
@@ -54,33 +52,31 @@ post '/authenticate' do
     verifier = SRP::Verifier.new(prime_length)
     session = verifier.get_challenge_and_proof(username, v, salt, aa)
 
-    # Server has to persist proof to authenticate the client response later.
+    logger.info 'P1 : Server persisting user verifier (proof)'
     user[:session_proof] = session[:proof]
 
-    # Server sends the challenge containing salt and B to client.
+    logger.info 'P1 : Server sending salt and B'
+    logger.info "P1 : Server salt : #{session[:challenge][:salt].length} : #{session[:challenge][:salt]}"
+    logger.info "P1 : Server B : #{session[:challenge][:B].length} : #{session[:challenge][:B]}"
     return JSON.generate(session[:challenge])
-
-  # Authentication Stage 2
   elsif params[:M]
-    logger.info "#{username} provided challenge response M"
+    logger.info 'P2 : Starting'
+    logger.info "P2 : Server received username '#{username}' and client M"
     client_M = params[:M]
-    logger.info "client M: #{client_M}"
+    logger.info "P2 : Client M : #{client_M.length} : #{client_M}"
 
-    # Retrieve previously stored proof from the database
+    logger.info 'P2 : Retrieving verifier from the database'
     proof = user[:session_proof]
 
-    # Instantiate a new verifier on the server.
+    logger.info 'P2 : Verifying client/server M match, generating H_AMK'
     verifier = SRP::Verifier.new(prime_length)
-
-    # Verify challenge response M, and store results in verifier instance
     server_H_AMK = verifier.verify_session(proof, client_M)
-    logger.info "server M: #{verifier.M}"
+    logger.info "P2 : server M: #{verifier.M}"
 
     if server_H_AMK
-      # Authenticated!
-      logger.info "#{username} authenticated"
-      logger.info "server H_AMK: #{server_H_AMK}"
-      logger.info "Client and server have negotiated shared secret K: #{verifier.K}"
+      logger.info "P2 : #{username} Authenticated!"
+      logger.info "P2 : Client and server negotiated shared key K : #{verifier.K}"
+      logger.info "P2 : Server sending final H_AMK : #{server_H_AMK.length} : #{server_H_AMK}"
       return JSON.generate(H_AMK: server_H_AMK)
     end
   end

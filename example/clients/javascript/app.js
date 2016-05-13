@@ -6,50 +6,47 @@ var password = 'capricciosa'
 $(document).ready(function () {
   'use strict'
 
-  console.log('Start authentication')
+  console.log('Starting Authentication')
+
+  $(document).ajaxError(function (event, request, settings) {
+    console.log(event)
+    console.log(request)
+    console.log(settings)
+  })
 
   client.init({ username: username, password: password, length: 4096 }, function () {
     client.createVerifier(function (err, result) {
       // result will contain the necessary values the server needs to
       // authenticate this user in the future.
-
-      console.log(client.srp.params)
-
       // sendSaltToServer(result.salt)
       // sendVerifierToServer(result.verifier)
 
-      // Hex 'A' value
       var A = client.getPublicKey()
 
-      console.log('Sending username and A to server')
-
-      $(document).ajaxError(function (event, request, settings) {
-        console.log(request)
-      })
-
       // Auth Phase 1
-      // Client => Server: username, A
-      // Server => Client: salt, B
+      console.log('P1 : Sending username and A to server')
       $.post(serverAddr, { username: username, A: A }, function (data) {
+        console.log('P1 : Received salt : ', data.salt)
+        console.log('P1 : Received B : ', data.B)
         client.setSalt(data.salt)
         client.setServerPublicKey(data.B)
 
         var clientM = client.getProof()
-        console.log('clientM', clientM)
+        console.log('P1 : calculated client M : ', clientM)
 
         // Auth Phase 2
-        // Client => Server: username, M
-        // Server => Client: H(AMK)
+        console.log('P2 : Sending username and M to server')
         $.post(serverAddr, { username: username, M: clientM }, function (data) {
-          console.log('data', data)
-          console.log('H_AMK', data.H_AMK)
-          console.log('checkServerProof', client.checkServerProof(data.H_AMK))
-
+          console.log('P2 : Received server H_AMK : ', data.H_AMK)
           if (client.checkServerProof(data.H_AMK)) {
-            // Authenticated!
-            console.log('shared key K: ', client.getSharedKey())
+            console.log('P2 : Client and server H_AMK match. Authenticated!')
+            console.log('P2 : Client and server negotiated shared key K : ', client.getSharedKey())
+            $('#status').html('Authenticated!')
+            $('#username').html(username)
+            $('#K').html(client.getSharedKey())
           } else {
-            console.log('failed')
+            $('#status').html('Authenticated FAILED')
+            console.log('P2 : Client and server H_AMK DO NOT match. Authentication failed!')
           }
         }, 'json')
       }, 'json')

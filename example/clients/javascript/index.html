@@ -6,9 +6,16 @@
   </head>
   <body>
     <h1>Secure Remote Password JS Client Example</h1>
+
     <p>
-      Open the JavaScript console to see the output.
+      Open the JavaScript console to see more output. Any shared secret
+      negotiated on successful authentication will be displayed below.
     </p>
+
+    <p id='status'></p>
+    <p id='username'></p>
+    <p id='K'></p>
+
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="node_modules/jsrp/jsrp-browser.js"></script>
     <script type="text/javascript" src="app.js"></script>
