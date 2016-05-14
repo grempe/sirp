@@ -30,3 +30,7 @@ Style/FormatString:
 
 Style/MethodName:
   Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+  

@@ -5,6 +5,12 @@ module SIRP
       [str].pack('H*').unpack('C*')
     end
 
+    def num_to_hex(num)
+      hex_str = num.to_s(16)
+      even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
+      even_hex_str.downcase
+    end
+
     def sha_hex(h, hash_klass)
       hash_klass.hexdigest([h].pack('H*'))
     end
@@ -100,12 +106,6 @@ module SIRP
     def calc_H_AMK(xaa, xmm, xkk, hash_klass)
       byte_string = hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
       sha_str(byte_string, hash_klass).hex
-    end
-
-    def num_to_hex(num)
-      hex_str = num.to_s(16)
-      even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
-      even_hex_str.downcase
     end
   end
 end

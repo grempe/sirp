@@ -12,17 +12,13 @@ end
 
 require 'sirp'
 
-RSpec.configure do |config|
-  config.expect_with :rspec do |c|
-    # c.syntax = :expect          # disables `should`
-    # c.syntax = :should          # disables `expect`
-    c.syntax = [:should, :expect] # default, enables both `should` and `expect`
-  end
-end
-
-# Monkey-patch API to define a, b and salt presetters
+# Monkey-patch Client and Verifier classes for testing convenience
 module SIRP
   class Verifier
+    def set_aa(val)
+      @A = val
+    end
+
     def set_b(val)
       @b = val
     end
@@ -37,6 +33,10 @@ module SIRP
   class Client
     def set_a(val)
       @a = val
+    end
+
+    def set_h_amk(val)
+      @H_AMK = val
     end
   end
 end
