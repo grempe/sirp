@@ -1,11 +1,12 @@
 module SIRP
   class Verifier
+    include SIRP
     attr_reader :N, :g, :k, :A, :B, :b, :S, :K, :M, :H_AMK, :hash
 
     def initialize(group = 2048)
       # select modulus (N) and generator (g)
-      @N, @g, @hash = SIRP.Ng(group)
-      @k = SIRP.calc_k(@N, @g, hash)
+      @N, @g, @hash = Ng(group)
+      @k = calc_k(@N, @g, hash)
     end
 
     # Initial user creation for the persistance layer.
@@ -13,9 +14,9 @@ module SIRP
     # Returns { <username>, <password verifier>, <salt> }
     def generate_userauth(username, password)
       @salt ||= SecureRandom.hex(10)
-      x = SIRP.calc_x(username, password, @salt, hash)
-      v = SIRP.calc_v(x, @N, @g)
-      { username: username, verifier: SIRP.num_to_hex(v), salt: @salt }
+      x = calc_x(username, password, @salt, hash)
+      v = calc_v(x, @N, @g)
+      { username: username, verifier: num_to_hex(v), salt: @salt }
     end
 
     # Authentication phase 1 - create challenge.
@@ -28,7 +29,7 @@ module SIRP
 
       {
         challenge: { B: @B, salt: xsalt },
-        proof: { A: xaa, B: @B, b: SIRP.num_to_hex(@b), I: username, s: xsalt, v: xverifier }
+        proof: { A: xaa, B: @B, b: num_to_hex(@b), I: username, s: xsalt, v: xverifier }
       }
     end
 
@@ -41,21 +42,21 @@ module SIRP
       @b = proof[:b].to_i(16)
       v = proof[:v].to_i(16)
 
-      u = SIRP.calc_u(@A, @B, @N, hash)
+      u = calc_u(@A, @B, @N, hash)
 
       # SRP-6a safety check
       return false if u == 0
 
       # calculate session key
-      @S = SIRP.num_to_hex(SIRP.calc_server_S(@A.to_i(16), @b, v, u, @N))
-      @K = SIRP.sha_hex(@S, hash)
+      @S = num_to_hex(calc_server_S(@A.to_i(16), @b, v, u, @N))
+      @K = sha_hex(@S, hash)
 
       # calculate match
-      @M = SIRP.calc_M(@A, @B, @K, hash)
+      @M = calc_M(@A, @B, @K, hash)
 
       if @M == client_M
         # authentication succeeded
-        @H_AMK = SIRP.num_to_hex(SIRP.calc_H_AMK(@A, @M, @K, hash))
+        @H_AMK = num_to_hex(calc_H_AMK(@A, @M, @K, hash))
       else
         false
       end
@@ -66,7 +67,7 @@ module SIRP
     def generate_B(xverifier)
       v = xverifier.to_i(16)
       @b ||= SecureRandom.hex(32).hex
-      @B = SIRP.num_to_hex(SIRP.calc_B(@b, k, v, @N, @g))
+      @B = num_to_hex(calc_B(@b, k, v, @N, @g))
     end
   end
 end

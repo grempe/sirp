@@ -1,17 +1,18 @@
 module SIRP
   class Client
+    include SIRP
     attr_reader :N, :g, :k, :a, :A, :S, :K, :M, :H_AMK, :hash
 
     def initialize(group = 2048)
       # select modulus (N) and generator (g)
-      @N, @g, @hash = SIRP.Ng(group)
-      @k = SIRP.calc_k(@N, @g, hash)
+      @N, @g, @hash = Ng(group)
+      @k = calc_k(@N, @g, hash)
     end
 
     def start_authentication
       # Generate a/A private and public components
       @a ||= SecureRandom.hex(32).hex
-      @A = SIRP.num_to_hex(SIRP.calc_A(@a, @N, @g))
+      @A = num_to_hex(calc_A(@a, @N, @g))
     end
 
     # Process initiated authentication challenge.
@@ -23,21 +24,21 @@ module SIRP
       # SRP-6a safety check
       return false if (bb % @N) == 0
 
-      x = SIRP.calc_x(username, password, xsalt, hash)
-      u = SIRP.calc_u(@A, xbb, @N, hash)
+      x = calc_x(username, password, xsalt, hash)
+      u = calc_u(@A, xbb, @N, hash)
 
       # SRP-6a safety check
       return false if u == 0
 
       # calculate session key
-      @S = SIRP.num_to_hex(SIRP.calc_client_S(bb, @a, @k, x, u, @N, @g))
-      @K = SIRP.sha_hex(@S, hash)
+      @S = num_to_hex(calc_client_S(bb, @a, @k, x, u, @N, @g))
+      @K = sha_hex(@S, hash)
 
       # calculate match
-      @M = SIRP.calc_M(@A, xbb, @K, hash)
+      @M = calc_M(@A, xbb, @K, hash)
 
       # calculate verifier
-      @H_AMK = SIRP.num_to_hex(SIRP.calc_H_AMK(@A, @M, @K, hash))
+      @H_AMK = num_to_hex(calc_H_AMK(@A, @M, @K, hash))
 
       @M
     end

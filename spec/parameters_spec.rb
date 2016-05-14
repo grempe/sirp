@@ -2,6 +2,7 @@
 require 'spec_helper'
 
 describe SIRP do
+  include SIRP
   # Test predefined values for N and g.
   # Values are from vectors listed in RFC 5054 Appendix B.
   #
@@ -32,9 +33,9 @@ describe SIRP do
       end
     end
 
-    it 'should be correct when accessed through a SIRP.Ng' do
+    it 'should be correct when accessed through a Ng' do
       @params.each do |p|
-        nn, g, h = SIRP.Ng(p[:group])
+        nn, g, h = Ng(p[:group])
         expect(('%b' % nn).length).to eq(p[:group])
         expect(Digest::SHA256.hexdigest(('%x' % nn))).to eq(p[:hash_nn])
         expect(g).to eq(p[:generator])

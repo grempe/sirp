@@ -1,5 +1,5 @@
 module SIRP
-  def self.Ng(group)
+  def Ng(group)
     case group
     when 1024
       @N = %w(

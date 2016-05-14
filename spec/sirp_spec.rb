@@ -5,6 +5,7 @@ require 'spec_helper'
 # Some values are from http://srp.stanford.edu/demo/demo.html using 256 bit values.
 #
 describe SIRP do
+  include SIRP
   before :all do
     @N = '115b8b692e0e045692cf280b436735c77a5a9e8a9e7ed56c965f87db5b2a2ece3'.to_i(16)
     @g = 2
@@ -17,7 +18,7 @@ describe SIRP do
 
   context 'hex_to_bytes' do
     it 'should calculate expected results' do
-      expect(SIRP.hex_to_bytes('abcdef0123456789'))
+      expect(hex_to_bytes('abcdef0123456789'))
         .to eq [171, 205, 239, 1, 35, 69, 103, 137]
     end
   end
@@ -25,7 +26,7 @@ describe SIRP do
   context 'num_to_hex' do
     it 'should calculate expected results' do
       num = 999_999_999_999
-      expect(SIRP.num_to_hex(num))
+      expect(num_to_hex(num))
         .to eq 'e8d4a50fff'
       expect('e8d4a50fff'.hex).to eq num
     end
@@ -33,24 +34,24 @@ describe SIRP do
 
   context 'sha_hex' do
     it 'should calculate expected results for SHA1' do
-      expect(SIRP.sha_hex('e8d4a50fff', Digest::SHA1))
+      expect(sha_hex('e8d4a50fff', Digest::SHA1))
         .to eq '62b225b459b48a52f68064f15fd464c200645a92'
     end
 
     it 'should calculate expected results for SHA256' do
-      expect(SIRP.sha_hex('e8d4a50fff', Digest::SHA256))
+      expect(sha_hex('e8d4a50fff', Digest::SHA256))
         .to eq '50cc877b5c7fe308b204f5b57bc1ac8e6fbd02fe2b50efc3b535af8490feb31a'
     end
   end
 
   context 'sha_str' do
     it 'should calculate expected results for SHA1' do
-      expect(SIRP.sha_str('foo', Digest::SHA1))
+      expect(sha_str('foo', Digest::SHA1))
         .to eq '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33'
     end
 
     it 'should calculate expected results for SHA256' do
-      expect(SIRP.sha_str('foo', Digest::SHA256))
+      expect(sha_str('foo', Digest::SHA256))
         .to eq '2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae'
     end
   end
@@ -60,7 +61,7 @@ describe SIRP do
       a = 2988348162058574136915891421498819466320163312926952423791023078876139
       b = 2351399303373464486466122544523690094744975233415544072992656881240319
       m = 10**40
-      c = SIRP.mod_exp(a, b, m)
+      c = mod_exp(a, b, m)
       expect(c).to eq 1527229998585248450016808958343740453059
     end
   end
@@ -69,19 +70,19 @@ describe SIRP do
     it 'should calculate expected results' do
       a = 2988348162058574136915891421498819466320163312926952423791023078876139
       b = 2351399303373464486466122544523690094744975233415544072992656881240319
-      c = SIRP.H(Digest::SHA1, a, b)
+      c = H(Digest::SHA1, a, b)
       expect(c).to eq 870206349645559849154987479939336526106829135959
     end
 
     it 'should raise an error when given invalid args' do
-      expect { SIRP.H(Digest::SHA1, 1, '123456789abcdef') }
+      expect { H(Digest::SHA1, 1, '123456789abcdef') }
         .to raise_error(RuntimeError, 'Bit width does not match - client uses different prime')
     end
   end
 
   context 'calc_k' do
     it 'should calculate expected results' do
-      k = SIRP.calc_k(@N, @g, Digest::SHA1)
+      k = calc_k(@N, @g, Digest::SHA1)
       expect(('%x' % k)).to eq 'dbe5dfe0704fee4c85ff106ecd38117d33bcfe50'
       expect(('%b' % k).length).to eq 160
     end
@@ -89,7 +90,7 @@ describe SIRP do
 
   context 'calc_x' do
     it 'should calculate expected results' do
-      x = SIRP.calc_x(@username, @password, @salt, Digest::SHA1)
+      x = calc_x(@username, @password, @salt, Digest::SHA1)
       expect(('%x' % x)).to eq 'bdd0a4e1c9df4082684d8d358b8016301b025375'
       expect(('%b' % x).length).to eq 160
     end
@@ -99,7 +100,7 @@ describe SIRP do
     it 'should calculate expected results' do
       aa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       bb = 'fbc56086bb51e26ee1a8287c0a7f3fd4e067e55beb8530b869b10b961957ff68'
-      u = SIRP.calc_u(aa, bb, @N, Digest::SHA1)
+      u = calc_u(aa, bb, @N, Digest::SHA1)
       expect(('%x' % u)).to eq 'c60b17ddf568dd5743d0e3ba5621646b742432c5'
       expect(('%b' % u).length).to eq 160
     end
@@ -108,7 +109,7 @@ describe SIRP do
   context 'calc_v' do
     it 'should calculate expected results' do
       x = 'bdd0a4e1c9df4082684d8d358b8016301b025375'.to_i(16)
-      v = SIRP.calc_v(x, @N, @g)
+      v = calc_v(x, @N, @g)
       expect(('%x' % v)).to eq 'ce36e101ed8c37ed98ba4e441274dabd1062f3440763eb98bd6058e5400b6309'
       expect(('%b' % v).length).to eq 256
     end
@@ -116,7 +117,7 @@ describe SIRP do
 
   context 'calc_A' do
     it 'should calculate expected results' do
-      aa = SIRP.calc_A(@a, @N, @g)
+      aa = calc_A(@a, @N, @g)
       expect(('%x' % aa)).to eq 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       expect(('%b' % aa).length).to eq 256
     end
@@ -126,7 +127,7 @@ describe SIRP do
     it 'should calculate expected results' do
       k = 'dbe5dfe0704fee4c85ff106ecd38117d33bcfe50'.to_i(16)
       v = 'ce36e101ed8c37ed98ba4e441274dabd1062f3440763eb98bd6058e5400b6309'.to_i(16)
-      bb = SIRP.calc_B(@b, k, v, @N, @g)
+      bb = calc_B(@b, k, v, @N, @g)
       expect(('%x' % bb)).to eq 'fbc56086bb51e26ee1a8287c0a7f3fd4e067e55beb8530b869b10b961957ff68'
       expect(('%b' % bb).length).to eq 256
     end
@@ -138,7 +139,7 @@ describe SIRP do
       k = 'dbe5dfe0704fee4c85ff106ecd38117d33bcfe50'.to_i(16)
       x = 'bdd0a4e1c9df4082684d8d358b8016301b025375'.to_i(16)
       u = 'c60b17ddf568dd5743d0e3ba5621646b742432c5'.to_i(16)
-      ss = SIRP.calc_client_S(bb, @a, k, x, u, @N, @g)
+      ss = calc_client_S(bb, @a, k, x, u, @N, @g)
       expect(('%x' % ss)).to eq 'a606c182e364d2c15f9cdbeeeb63bb00c831d1da65eedc1414f21157d0312a5a'
       expect(('%b' % ss).length).to eq 256
     end
@@ -149,7 +150,7 @@ describe SIRP do
       aa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'.to_i(16)
       v = 'ce36e101ed8c37ed98ba4e441274dabd1062f3440763eb98bd6058e5400b6309'.to_i(16)
       u = 'c60b17ddf568dd5743d0e3ba5621646b742432c5'.to_i(16)
-      ss = SIRP.calc_server_S(aa, @b, v, u, @N)
+      ss = calc_server_S(aa, @b, v, u, @N)
       expect(('%x' % ss)).to eq 'a606c182e364d2c15f9cdbeeeb63bb00c831d1da65eedc1414f21157d0312a5a'
       expect(('%b' % ss).length).to eq 256
     end
@@ -160,9 +161,9 @@ describe SIRP do
       xaa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       xbb = 'fbc56086bb51e26ee1a8287c0a7f3fd4e067e55beb8530b869b10b961957ff68'
       xss = 'a606c182e364d2c15f9cdbeeeb63bb00c831d1da65eedc1414f21157d0312a5a'
-      xkk = SIRP.sha_hex(xss, Digest::SHA1)
+      xkk = sha_hex(xss, Digest::SHA1)
       expect(xkk).to eq '5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67'
-      mm = SIRP.calc_M(xaa, xbb, xkk, Digest::SHA1)
+      mm = calc_M(xaa, xbb, xkk, Digest::SHA1)
       expect(mm).to eq '0c6de5c7892a71bf971d733a511c44940e227941'
     end
   end
@@ -172,7 +173,7 @@ describe SIRP do
       xaa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       xmm = 'd597503056af882d5b27b419302ac7b2ea9d7468'
       xkk = '5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67'
-      h_amk = SIRP.calc_H_AMK(xaa, xmm, xkk, Digest::SHA1)
+      h_amk = calc_H_AMK(xaa, xmm, xkk, Digest::SHA1)
       expect(('%x' % h_amk)).to eq '530fccc1c4aa82ae5c5cdfa8bdec987c6032451d'
     end
   end
