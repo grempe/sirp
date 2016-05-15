@@ -119,11 +119,75 @@ compliant third-party libraries:
 
 [JSRP / JavaScript](https://github.com/alax/jsrp)
 
+## SRP-6a Protocol Design
+
+Extracted from [http://srp.stanford.edu/design.html](http://srp.stanford.edu/design.html)
+
+```text
+SRP is the newest addition to a new class of strong authentication protocols that resist all the well-known passive and active attacks over the network. SRP borrows some elements from other key-exchange and identification protcols and adds some subtle modifications and refinements. The result is a protocol that preserves the strength and efficiency of the EKE family protocols while fixing some of their shortcomings.
+
+The following is a description of SRP-6 and 6a, the latest versions of SRP:
+
+  N    A large safe prime (N = 2q+1, where q is prime)
+       All arithmetic is done modulo N.
+  g    A generator modulo N
+  k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
+  s    User's salt
+  I    Username
+  p    Cleartext Password
+  H()  One-way hash function
+  ^    (Modular) Exponentiation
+  u    Random scrambling parameter
+  a,b  Secret ephemeral values
+  A,B  Public ephemeral values
+  x    Private key (derived from p and s)
+  v    Password verifier
+
+The host stores passwords using the following formula:
+
+  x = H(s, p)               (s is chosen randomly)
+  v = g^x                   (computes password verifier)
+
+The host then keeps {I, s, v} in its password database. The authentication protocol itself goes as follows:
+
+User -> Host:  I, A = g^a                  (identifies self, a = random number)
+Host -> User:  s, B = kv + g^b             (sends salt, b = random number)
+
+        Both:  u = H(A, B)
+
+        User:  x = H(s, p)                 (user enters password)
+        User:  S = (B - kg^x) ^ (a + ux)   (computes session key)
+        User:  K = H(S)
+
+        Host:  S = (Av^u) ^ b              (computes session key)
+        Host:  K = H(S)
+
+Now the two parties have a shared, strong session key K. To complete authentication, they need to prove to each other that their keys match. One possible way:
+
+User -> Host:  M = H(H(N) xor H(g), H(I), s, A, B, K)
+Host -> User:  H(A, M, K)
+
+The two parties also employ the following safeguards:
+
+The user will abort if he receives B == 0 (mod N) or u == 0.
+The host will abort if it detects that A == 0 (mod N).
+The user must show his proof of K first. If the server detects that the user's proof is incorrect, it must abort without showing its own proof of K.
+```
+
 ## Usage Example
 
 In this example the client and server steps are interleaved for demonstration
 purposes. See the `examples` dir for simple working client and server
-implementations.
+implementations in Ruby and Javascript. The phases of authentication in this
+example are delineated by the HTTPS request/response between client and server.
+
+The concept of 'phases' is something noted here for convenience. The specification
+does not talk about phases.
+
+This example is useful for showing the ordering and arguments in the public
+API and is not intended to be a 'copy & paste' code sample since the
+client and server interaction is something left up to the implementer and likely
+different in every case.
 
 ``` ruby
 require 'sirp'
@@ -132,22 +196,42 @@ username     = 'user'
 password     = 'password'
 prime_length = 2048
 
-# The salt and verifier should be stored on the server database.
-@auth = SIRP::Verifier.new(prime_length).generate_userauth(username, password)
-# @auth is a hash containing :username, :verifier and :salt
+# ~~~ Phase 0 : User Registration ~~~
 
-# ~~~ Begin Authentication ~~~
+# One time only! SRP is a form of TOFU (Trust On First Use) authentication
+# where all is predicated on the client being able to register a verifier
+# with the server upon initial registration. The server promises in turn to
+# keep this verifier secret and never reveal it. If this first interaction
+# is compromised then all is lost. If the verifier is revealed then there
+# is a theoretical attack on the verifier which could reveal information
+# about the password. It is likely cryptographically difficult though.
+# It is important that the username and password combination be of
+# high entropy.
+
+# The salt and verifier should be persisted server-side, accessible by
+# looking up via the username. The server must protect the verifier but
+# will return the salt to any party requesting authentication who knows
+# the username.
+
+@auth = SIRP::Verifier.new(prime_length).generate_userauth(username, password)
+# => {username: '...', verifier: '...', salt: '...'}
+
+# ~~~ Phase 1 : Challenge/Response ~~~
 
 client = SIRP::Client.new(prime_length)
 A = client.start_authentication
 
-# Client => Server: username, A
+# HTTPS POST Client => Server: request includes 'username' and  'A'
 
-# Server retrieves user's verifier and salt from the database.
+# Server retrieves user's verifier and salt from the database by
+# looking up these values indexed by 'username'. Here simulated
+# by using the @auth hash directly.
 v    = @auth[:verifier]
 salt = @auth[:salt]
 
-# Server generates challenge for the client.
+# Server generates a challenge for the client and a proof it will require
+# in Phase 2 of the auth process. The challenge is given to the client, the
+# proof is temporarily persisted.
 verifier = SIRP::Verifier.new(prime_length)
 session = verifier.get_challenge_and_proof(username, v, salt, A)
 
@@ -157,29 +241,49 @@ session = verifier.get_challenge_and_proof(username, v, salt, A)
 # Server sends the challenge containing salt and B to client.
 response = session[:challenge]
 
-# Server => Client: salt, B
+# HTTPS Server => Client: response includes 'salt', and 'B'
 
-# Client calculates M as a response to the challenge.
+# ~~~ Phase 2 : Continue Authentication ~~~
+
+# Client calculates M as a response to the challenge using the
+# username and password and the server provided 'salt' and 'B'.
 client_M = client.process_challenge(username, password, salt, B)
 
-# Client => Server: username, M
+# HTTPS POST Client => Server: request includes 'username', and 'M'
 
 # Instantiate a new verifier on the server.
 verifier = SIRP::Verifier.new(prime_length)
 
-# Verify challenge response M.
-# The Verifier state is passed in @proof.
+# Verify challenge response M against the Verifier proof stored earlier.
+# server_H_AMK returned will be 'false' if verification failed.
 server_H_AMK = verifier.verify_session(@proof, client_M)
-# Is false if authentication failed.
 
-# At this point, the client and server should have a common session key
-# that is secure (i.e. not known to an outside party).  To finish
-# authentication, they must prove to each other that their keys are
-# identical.
+# At this point, the client and server should have a common session key (K)
+# that is secure and unknown to any outside party. Before they can safely use
+# it though they must prove to each other that their keys are identical by
+# exchanging a hash H(A,M,K). This step allows both client and server to be
+# certain they arrived at the same values independently.
 
-# Server => Client: H(AMK)
+# The server sends a response based on the results of verify_session.
 
-client.verify(server_H_AMK) == true
+if server_H_AMK
+  # HTTPS Server => Client: response includes server_H_AMK
+else
+  # Do NOT include the server_H_AMK in the response.
+  # HTTPS Server => Client: 401 Unauthorized
+end
+
+# The client compares server_H_AMK response to its own calculated H(A,M,K).
+
+if client.verify(server_H_AMK)
+  ####  SUCCESS ####
+  # Client and server have mutually authenticated.
+  # Optional : Use this secret key to derive shared encryption keys for some
+  # other application specific use.
+  secret_key = client.K
+else
+  # FAIL, THROW IT ALL AWAY AND START OVER!
+end
 
 ```
 

@@ -3,19 +3,22 @@ module SIRP
     include SIRP
     attr_reader :N, :g, :k, :A, :B, :b, :S, :K, :M, :H_AMK, :hash
 
+    # Select modulus (N), generator (g), and one-way hash function (SHA1 or SHA256)
+    #
+    # @param group [Integer] the group size in bits
     def initialize(group = 2048)
       # select modulus (N) and generator (g)
       @N, @g, @hash = Ng(group)
       @k = calc_k(@N, @g, hash)
     end
 
-    # Phase 0 ; Generate a verifier and salt client-side. This should be
+    # Phase 0 ; Generate a verifier and salt client-side. This should only be
     # used during the initial user registration process. All three values
     # should be provided as attributes in the user registration process. The
     # verifier and salt should be persisted server-side. The verifier
-    # should be protected and never made public or returned to the user.
-    # The salt should be returned to the user to start Phase 1 of the
-    # authentication process.
+    # should be protected and never made public or given to any user.
+    # The salt should be returned to any user requesting it to start
+    # Phase 1 of the authentication process.
     #
     # @param username [String] the authentication username
     # @param password [String] the authentication password
@@ -27,7 +30,7 @@ module SIRP
       { username: username, verifier: num_to_hex(v), salt: @salt }
     end
 
-    # Phase 1 - Create a challenge for the client, and a proof to be stored
+    # Phase 1 : Step 2 : Create a challenge for the client, and a proof to be stored
     # on the server for later use when verifying the client response.
     #
     # @param username [String] the client provided authentication username
@@ -50,7 +53,11 @@ module SIRP
       }
     end
 
-    # Phase 2 - Use the server stored proof and the client provided 'M' value.
+    #
+    # Phase 2 : Step 1 : See Client#start_authentication
+    #
+
+    # Phase 2 : Step 2 : Use the server stored proof and the client provided 'M' value.
     # Calculates a server 'M' value and compares it to the client provided one,
     # and if they match the client and server have negotiated equal secrets.
     # Returns a H(A, M, K) value on success and false on failure.
@@ -75,19 +82,20 @@ module SIRP
       # SRP-6a safety check
       return false if u.zero?
 
-      # calculate session key
+      # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_server_S(@A.to_i(16), @b, v, u, @N))
       @K = sha_hex(@S, hash)
 
-      # calculate match
+      # Calculate the 'M' matcher
       @M = calc_M(@A, @B, @K, hash)
 
       # Secure constant time comparison, hash the params to ensure
       # that both strings being compared are equal length 32 Byte strings.
       if secure_compare(Digest::SHA256.hexdigest(@M), Digest::SHA256.hexdigest(client_M))
-        # authentication succeeded
+        # Authentication succeeded, Calculate the H(A,M,K) verifier
         @H_AMK = num_to_hex(calc_H_AMK(@A, @M, @K, hash))
       else
+        # Authentication failed
         false
       end
     end
