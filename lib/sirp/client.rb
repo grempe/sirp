@@ -22,13 +22,13 @@ module SIRP
       bb = xbb.to_i(16)
 
       # SRP-6a safety check
-      return false if (bb % @N) == 0
+      return false if (bb % @N).zero?
 
       x = calc_x(username, password, xsalt, hash)
       u = calc_u(@A, xbb, @N, hash)
 
       # SRP-6a safety check
-      return false if u == 0
+      return false if u.zero?
 
       # calculate session key
       @S = num_to_hex(calc_client_S(bb, @a, @k, x, u, @N, @g))

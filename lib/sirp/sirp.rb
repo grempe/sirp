@@ -58,7 +58,7 @@ module SIRP
 
     hashin = a.map do |s|
       next unless s
-      shex = (s.class == String) ? s : num_to_hex(s)
+      shex = s.is_a?(String) ? s : num_to_hex(s)
       if shex.length > nlen
         raise 'Bit width does not match - client uses different prime'
       end

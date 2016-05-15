@@ -24,7 +24,8 @@ module SIRP
     # Parameters should be given in hex.
     def get_challenge_and_proof(username, xverifier, xsalt, xaa)
       # SRP-6a safety check
-      return false if (xaa.to_i(16) % @N) == 0
+      return false if (xaa.to_i(16) % @N).zero?
+
       generate_B(xverifier)
 
       {
@@ -45,7 +46,7 @@ module SIRP
       u = calc_u(@A, @B, @N, hash)
 
       # SRP-6a safety check
-      return false if u == 0
+      return false if u.zero?
 
       # calculate session key
       @S = num_to_hex(calc_server_S(@A.to_i(16), @b, v, u, @N))
