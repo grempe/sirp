@@ -19,14 +19,14 @@ module SIRP
   end
 
   # Constant time string comparison.
-  #   Extracted from Rack::Utils
-  #   https://github.com/rack/rack/blob/master/lib/rack/utils.rb
+  # Extracted from Rack::Utils
+  # https://github.com/rack/rack/blob/master/lib/rack/utils.rb
   #
-  #   NOTE: the values compared should be of fixed length, such as strings
-  #   that have already been processed by HMAC. This should not be used
-  #   on variable length plaintext strings because it could leak length info
-  #   via timing attacks. The user provided value should always be passed
-  #   in as the second parameter so as not to leak info about the secret.
+  # NOTE: the values compared should be of fixed length, such as strings
+  # that have already been processed by HMAC. This should not be used
+  # on variable length plaintext strings because it could leak length info
+  # via timing attacks. The user provided value should always be passed
+  # in as the second parameter so as not to leak info about the secret.
   #
   # @param a [String] the private value
   # @param b [String] the user provided value
