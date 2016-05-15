@@ -45,7 +45,9 @@ module SIRP
 
     def verify(server_HAMK)
       return false unless @H_AMK
-      @H_AMK == server_HAMK
+      # Secure constant time comparison, hash the params to ensure
+      # that both strings being compared are equal length 32 Byte strings.
+      secure_compare(Digest::SHA256.hexdigest(@H_AMK), Digest::SHA256.hexdigest(server_HAMK))
     end
   end
 end

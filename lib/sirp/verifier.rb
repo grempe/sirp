@@ -54,7 +54,9 @@ module SIRP
       # calculate match
       @M = calc_M(@A, @B, @K, hash)
 
-      if @M == client_M
+      # Secure constant time comparison, hash the params to ensure
+      # that both strings being compared are equal length 32 Byte strings.
+      if secure_compare(Digest::SHA256.hexdigest(@M), Digest::SHA256.hexdigest(client_M))
         # authentication succeeded
         @H_AMK = num_to_hex(calc_H_AMK(@A, @M, @K, hash))
       else

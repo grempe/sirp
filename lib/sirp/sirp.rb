@@ -18,6 +18,29 @@ module SIRP
     hash_klass.hexdigest(s)
   end
 
+  # Constant time string comparison.
+  #   Extracted from Rack::Utils
+  #   https://github.com/rack/rack/blob/master/lib/rack/utils.rb
+  #
+  #   NOTE: the values compared should be of fixed length, such as strings
+  #   that have already been processed by HMAC. This should not be used
+  #   on variable length plaintext strings because it could leak length info
+  #   via timing attacks. The user provided value should always be passed
+  #   in as the second parameter so as not to leak info about the secret.
+  #
+  # @param a [String] the private value
+  # @param b [String] the user provided value
+  # @return [true, false] whether the strings match or not
+  def secure_compare(a, b)
+    return false unless a.bytesize == b.bytesize
+
+    l = a.unpack('C*')
+
+    r, i = 0, -1
+    b.each_byte { |v| r |= v ^ l[i+=1] }
+    r == 0
+  end
+
   # Modular Exponentiation
   # https://en.m.wikipedia.org/wiki/Modular_exponentiation
   # http://rosettacode.org/wiki/Modular_exponentiation#Ruby
