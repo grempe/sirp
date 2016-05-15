@@ -39,7 +39,10 @@ module SIRP
       # SRP-6a safety check
       return false if (xaa.to_i(16) % @N).zero?
 
-      generate_B(xverifier)
+      # Generate b and B
+      v = xverifier.to_i(16)
+      @b ||= SecureRandom.hex(32).hex
+      @B = num_to_hex(calc_B(@b, k, v, @N, @g))
 
       {
         challenge: { B: @B, salt: xsalt },
@@ -87,14 +90,6 @@ module SIRP
       else
         false
       end
-    end
-
-    # @param xverifier [String] the server stored verifier for the username in hex
-    # @return [String] the B value in hex
-    def generate_B(xverifier)
-      v = xverifier.to_i(16)
-      @b ||= SecureRandom.hex(32).hex
-      @B = num_to_hex(calc_B(@b, k, v, @N, @g))
     end
   end
 end

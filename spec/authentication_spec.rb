@@ -31,14 +31,14 @@ describe SIRP do
       # phaase 1 (server)
       v = @auth[:verifier]
       salt = @auth[:salt]
-      bb = verifier.generate_B(v)
-      b = format('%x' % verifier.b)
+
+      cp = verifier.get_challenge_and_proof(@username, v, salt, aa)
 
       # phase 2 (client)
-      client_M = client.process_challenge(@username, 'icnivad', salt, bb)
+      client_M = client.process_challenge(@username, 'icnivad', salt, cp[:proof][:B])
 
       # phase 2 (server)
-      proof = { A: aa, B: bb, b: b, I: @username, s: salt, v: v }
+      proof = { A: aa, B: cp[:proof][:B], b: cp[:proof][:b], I: @username, s: salt, v: v }
       server_H_AMK = verifier.verify_session(proof, client_M)
       expect(server_H_AMK).to be_truthy
 
@@ -56,14 +56,13 @@ describe SIRP do
       # phaase 1 (server)
       v = @auth[:verifier]
       salt = @auth[:salt]
-      bb = verifier.generate_B(v)
-      b = format('%x' % verifier.b)
+      cp = verifier.get_challenge_and_proof(@username, v, salt, aa)
 
       # phase 2 (client)
-      client_M = client.process_challenge(@username, 'BAD PASSWORD', salt, bb)
+      client_M = client.process_challenge(@username, 'BAD PASSWORD', salt, cp[:proof][:B])
 
       # phase 2 (server)
-      proof = { A: aa, B: bb, b: b, I: @username, s: salt, v: v }
+      proof = { A: aa, B: cp[:proof][:B], b: cp[:proof][:b], I: @username, s: salt, v: v }
       server_H_AMK = verifier.verify_session(proof, client_M)
       expect(server_H_AMK).to be false
 

@@ -71,6 +71,17 @@ describe SIRP do
       expect(cp[:proof].key?(:s)).to be true
       expect(cp[:proof].key?(:v)).to be true
     end
+
+    it 'should generate expected B with predefined b' do
+      v = '321307d87ca3462f5b0cb5df295bea04498563794e5401899b2f32dd5cab5b7de9da78e7d62ea235e6d7f43a4ea09fea7c0dafdee6e79a1d12e2e374048deeaf5ba7c68e2ad952a3f5dc084400a7f1599a31d6d9d50269a9208db88f84090e8aa3c7b019f39529dcc19baa985a8d7ffb2d7628071d2313c9eaabc504d3333688'
+      verifier = SIRP::Verifier.new(1024)
+      @auth = verifier.generate_userauth('foo', 'bar')
+      verifier.set_b(@b.to_i(16))
+      cp = verifier.get_challenge_and_proof(@username, v, @auth[:salt], @auth[:verifier])
+      expect(('%b' % cp[:proof][:b].to_i(16)).length).to be > 200
+      expect(('%b' % cp[:challenge][:B].to_i(16)).length).to be >= 1000
+      expect(cp[:challenge][:B]).to eq '56777d24af1121bd6af6aeb84238ff8d250122fe75ed251db0f47c289642ae7adb9ef319ce3ab23b6ecc97e5904749fc42f12bb016ecf39691db541f066667b8399bfa685c82b03ad8f92f75975ed086dbe0d470d4dd907ce11b19ee41b74aee72bd8445cde6b58c01f678e39ed9cd6b93c79382637df90777a96c10a768c510'
+    end
   end
 
   context 'verify_session' do
@@ -106,23 +117,6 @@ describe SIRP do
       expect(verifier.M).to eq client_M
       expect(verifier.S).to eq ss
       expect(verifier.H_AMK).to eq 'a93d906ef5c0a15a8e525da6a271692d2e553c72'
-    end
-  end
-
-  context 'generate_B' do
-    it 'should generate B with predefined b' do
-      v = '321307d87ca3462f5b0cb5df295bea04498563794e5401899b2f32dd5cab5b7de9da78e7d62ea235e6d7f43a4ea09fea7c0dafdee6e79a1d12e2e374048deeaf5ba7c68e2ad952a3f5dc084400a7f1599a31d6d9d50269a9208db88f84090e8aa3c7b019f39529dcc19baa985a8d7ffb2d7628071d2313c9eaabc504d3333688'
-      verifier = SIRP::Verifier.new(1024)
-      verifier.set_b(@b.to_i(16))
-      bb = verifier.generate_B(v)
-      expect(bb).to eq '56777d24af1121bd6af6aeb84238ff8d250122fe75ed251db0f47c289642ae7adb9ef319ce3ab23b6ecc97e5904749fc42f12bb016ecf39691db541f066667b8399bfa685c82b03ad8f92f75975ed086dbe0d470d4dd907ce11b19ee41b74aee72bd8445cde6b58c01f678e39ed9cd6b93c79382637df90777a96c10a768c510'
-    end
-
-    it 'should generate B' do
-      verifier = SIRP::Verifier.new(1024)
-      bb = verifier.generate_B('0')
-      expect(('%b' % bb.to_i(16)).length).to be >= 1000
-      expect(('%b' % verifier.b).length).to be > 200
     end
   end
 end
