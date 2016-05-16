@@ -24,7 +24,7 @@ users = {
 }
 
 user_verifiers = users.map do |username, password|
-  { username => SIRP::Verifier.new(prime_length).generate_userauth(username, password) }
+  { username => SIRP::Verifier.new(prime_length).generate_userauth(username.to_s, password) }
 end
 
 user_verifiers.each { |h| users.update h }
