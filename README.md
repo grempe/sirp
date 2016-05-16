@@ -9,29 +9,40 @@
 
 Ruby Docs : [http://www.rubydoc.info/gems/sirp](http://www.rubydoc.info/gems/sirp)
 
-
 This is a pure Ruby implementation of the
 [Secure Remote Password](http://srp.stanford.edu/) protocol (SRP-6a),
 which is a 'zero-knowledge' mutual authentication system.
 
-SiRP is an authentication method that allows the use of user names and passwords
-over an insecure network connection without revealing the password. If either the
-client lacks the user's password or the server lacks the proper verification
-key, the authentication will fail. This approach is much more secure than the
-vast majority of authentication systems in daily use since the password is
-***never*** sent over the wire, and is therefore impossible to intercept, and
-impossible to be revealed in a breach unless the verifier can be reversed. This
-attack would be of similar difficulty as deriving a private encryption key from
-its public key.
+SRP is an protocol that allows for mutual authentication of a client and
+server over an insecure network connection without revealing the password to the
+server or an evesdropper. If the client lacks the user's password, or the server
+lacks the proper verification key, the authentication will fail. This approach
+is much more secure than the vast majority of authentication systems in common use
+since the password is never sent over the wire. The password is impossible to
+intercept, or to be revealed in a server breach, unless the verifier can be
+reversed. Since the verifier is derived from the password + salt through
+cryptographic one-way hash functions and Modular Exponentiation. Attacking the
+verifier to retrieve a password would be of similar difficulty
+as deriving a private encryption key from its public key. Extremely difficult, if
+not impossible.
 
 Unlike other common challenge-response authentication protocols, such as
-Kerberos and SSL, SiRP does not rely on an external infrastructure of trusted
+Kerberos and SSL, SRP does not rely on an external infrastructure of trusted
 key servers or complex certificate management.
+
+At the end of the authentication process both the client and the server will have
+negotiated a shared strong encryption key suitable for encrypted session
+communications. This key is negotiated through a modified Diffie-Hellman
+key exchange and the key is never sent over the wire.
+
+SiRP is designed to be interoperable with a Ruby client and server, or
+with Ruby on the server side, and the [JSRP](https://github.com/alax/jsrp)
+Javascript client running in a browser.
 
 ## Documentation
 
 There is pretty extensive inline documentation. You can view the latest
-auto-generated docs at [http://www.rubydoc.info/gems/sirp](http://www.rubydoc.info/gems/sirp)
+API docs at [http://www.rubydoc.info/gems/sirp](http://www.rubydoc.info/gems/sirp)
 
 You can check my documentation quality score at
 [http://inch-ci.org/github/grempe/sirp](http://inch-ci.org/github/grempe/sirp?branch=master)
@@ -40,9 +51,11 @@ You can check my documentation quality score at
 
 SiRP is continuously integration tested on the following Ruby VMs:
 
-* MRI 2.1, 2.2, 2.3
+* MRI 2.1
+* MRI 2.2
+* MRI 2.3
 
-It may work on others as well.
+Ruby versions < 2.1 are not supported.
 
 ## Installation
 
@@ -123,8 +136,13 @@ compliant third-party libraries:
 
 Extracted from [http://srp.stanford.edu/design.html](http://srp.stanford.edu/design.html)
 
-```text
-SRP is the newest addition to a new class of strong authentication protocols that resist all the well-known passive and active attacks over the network. SRP borrows some elements from other key-exchange and identification protcols and adds some subtle modifications and refinements. The result is a protocol that preserves the strength and efficiency of the EKE family protocols while fixing some of their shortcomings.
+```
+SRP is the newest addition to a new class of strong authentication protocols
+that resist all the well-known passive and active attacks over the network.
+SRP borrows some elements from other key-exchange and identification protcols
+and adds some subtle modifications and refinements. The result is a protocol
+that preserves the strength and efficiency of the EKE family protocols while
+fixing some of their shortcomings.
 
 The following is a description of SRP-6 and 6a, the latest versions of SRP:
 
@@ -148,7 +166,8 @@ The host stores passwords using the following formula:
   x = H(s, p)               (s is chosen randomly)
   v = g^x                   (computes password verifier)
 
-The host then keeps {I, s, v} in its password database. The authentication protocol itself goes as follows:
+The host then keeps {I, s, v} in its password database. The authentication
+protocol itself goes as follows:
 
 User -> Host:  I, A = g^a                  (identifies self, a = random number)
 Host -> User:  s, B = kv + g^b             (sends salt, b = random number)
@@ -162,16 +181,19 @@ Host -> User:  s, B = kv + g^b             (sends salt, b = random number)
         Host:  S = (Av^u) ^ b              (computes session key)
         Host:  K = H(S)
 
-Now the two parties have a shared, strong session key K. To complete authentication, they need to prove to each other that their keys match. One possible way:
+Now the two parties have a shared, strong session key K. To complete
+authentication, they need to prove to each other that their keys match.
+One possible way:
 
 User -> Host:  M = H(H(N) xor H(g), H(I), s, A, B, K)
 Host -> User:  H(A, M, K)
 
 The two parties also employ the following safeguards:
 
-The user will abort if he receives B == 0 (mod N) or u == 0.
-The host will abort if it detects that A == 0 (mod N).
-The user must show his proof of K first. If the server detects that the user's proof is incorrect, it must abort without showing its own proof of K.
+* The user will abort if he receives B == 0 (mod N) or u == 0.
+* The host will abort if it detects that A == 0 (mod N).
+* The user must show his proof of K first. If the server detects that the
+user's proof is incorrect, it must abort without showing its own proof of K.
 ```
 
 ## Usage Example
