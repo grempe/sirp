@@ -1,23 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
-    <title>Secure Remote Password JS Client Example</title>
-  </head>
-  <body>
-    <h1>Secure Remote Password JS Client Example</h1>
+    <title>SiRP Demo : Secure (interoperable) Remote Password Authentication</title>
+</head>
+
+<body>
+    <h1>SiRP Demo : Secure (interoperable) Remote Password Authentication</h1>
 
     <p>
-      Open the JavaScript console to see more output. Any shared secret
-      negotiated on successful authentication will be displayed below.
+        This is a demo of the <a href="https://github.com/grempe/sirp">SiRP Ruby Gem</a>,
+        and the <a href="https://github.com/alax/jsrp">JSRP Javascript client</a>.
+        Open the Javascript console to see any unhandled error output.
     </p>
 
-    <p id='status'></p>
-    <p id='username'></p>
-    <p id='K'></p>
+    <h2>Authentication : Phase 0 (Setup)</h2>
+    <pre id='statusP0'></pre>
+    <br/>
+
+    <h2>Authentication : Phase 1</h2>
+    <pre id='statusP1'></pre>
+    <br/>
+
+    <h2>Authentication : Phase 2</h2>
+    <pre id='statusP2'></pre>
+    <br/>
+
+    <h2>Authentication : Errors</h2>
+    <pre id='statusErr'></pre>
+    <br/>
 
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="node_modules/jsrp/jsrp-browser.js"></script>
     <script type="text/javascript" src="app.js"></script>
-  </body>
+</body>
+
 </html>
