@@ -8,8 +8,7 @@ describe SIRP do
   #
   context 'parameters' do
     it 'should raise an error on unknown verifier group size' do
-      expect { SIRP::Client.new(1234) }.to raise_error(ArgumentError, 'must be a known group size')
-      expect { SIRP::Verifier.new(1234) }.to raise_error(ArgumentError, 'must be a known group size')
+      expect { Ng(1234) }.to raise_error(ArgumentError, 'must be a known group size')
     end
 
     before :all do

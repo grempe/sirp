@@ -12,6 +12,10 @@ describe SIRP do
       @b        = '8143e2f299852a05717427ea9d87c6146e747d0da6e95f4390264e55a43ae96'
     end
 
+    it 'should fail to initialize with a bad group size' do
+      expect { SIRP::Client.new(1234) }.to raise_error(ArgumentError, 'must be a known group size')
+    end
+
     it 'should calculate A from random a' do
       client = SIRP::Client.new(1024)
       aa1 = client.start_authentication

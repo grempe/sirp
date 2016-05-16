@@ -163,7 +163,7 @@ module SIRP
       @g = 19
       @hash = Digest::SHA256
     else
-      raise NotImplementedError, 'unknown group size'
+      raise ArgumentError, 'must be a known group size'
     end
 
     [@N, @g, @hash]

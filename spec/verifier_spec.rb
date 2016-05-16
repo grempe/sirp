@@ -12,6 +12,10 @@ describe SIRP do
   end
 
   context 'initialize' do
+    it 'should fail to initialize with a bad group size' do
+      expect { SIRP::Verifier.new(1234) }.to raise_error(ArgumentError, 'must be a known group size')
+    end
+
     it 'should calculate k' do
       k = SIRP::Verifier.new(1024).k
       expect(k).to eq '7556aa045aef2cdd07abaf0f665c3e818913186f'.to_i(16)
