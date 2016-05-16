@@ -39,6 +39,10 @@ SiRP is designed to be interoperable with a Ruby client and server, or
 with Ruby on the server side, and the [JSRP](https://github.com/alax/jsrp)
 Javascript client running in a browser.
 
+## Live Demo
+
+You can try out an interactive demo at [https://sirp-demo.herokuapp.com/index.html](https://sirp-demo.herokuapp.com/index.html)
+
 ## Documentation
 
 There is pretty extensive inline documentation. You can view the latest
