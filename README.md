@@ -41,7 +41,10 @@ Javascript client running in a browser.
 
 ## Live Demo
 
-You can try out an interactive demo at [https://sirp-demo.herokuapp.com/index.html](https://sirp-demo.herokuapp.com/index.html)
+You can try out an interactive demo at
+[https://sirp-demo.herokuapp.com/index.html](https://sirp-demo.herokuapp.com/index.html).
+
+[Demo Source Code @ grempe/sirp-demo](https://github.com/grempe/sirp-demo)
 
 ## Documentation
 
@@ -203,12 +206,11 @@ user's proof is incorrect, it must abort without showing its own proof of K.
 ## Usage Example
 
 In this example the client and server steps are interleaved for demonstration
-purposes. See the `examples` dir for simple working client and server
-implementations in Ruby and Javascript. The phases of authentication in this
-example are delineated by the HTTPS request/response between client and server.
-
-The concept of 'phases' is something noted here for convenience. The specification
-does not talk about phases.
+purposes. See the [grempe/sirp-demo](https://github.com/grempe/sirp-demo)
+repository for working sample code and a live demo. The phases of authentication
+in this example are delineated by the HTTPS request/response between client and
+server. The concept of 'phases' is something noted here for convenience. The
+specification makes no mention of phases since it is implementation specific.
 
 This example is useful for showing the ordering and arguments in the public
 API and is not intended to be a 'copy & paste' code sample since the
