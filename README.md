@@ -304,6 +304,8 @@ interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 
+The formal release process can be found in [RELEASE.md](https://github.com/grempe/sirp/blob/master/RELEASE.md)
+
 ### Contributing
 
 Bug reports and pull requests are welcome on GitHub
