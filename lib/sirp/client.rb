@@ -7,6 +7,9 @@ module SIRP
     #
     # @param group [Integer] the group size in bits
     def initialize(group = 2048)
+      raise ArgumentError, 'must be an Integer' unless group.is_a?(Integer)
+      raise ArgumentError, 'must be a known group size' unless [1024, 1536, 2048, 3072, 4096, 6144, 8192].include?(group)
+
       @N, @g, @hash = Ng(group)
       @k = calc_k(@N, @g, hash)
     end
@@ -34,6 +37,13 @@ module SIRP
     # @param xbb [String] the server verifier 'B' value in hex
     # @return [String] the client 'M' value in hex
     def process_challenge(username, password, xsalt, xbb)
+      raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
+      raise ArgumentError, 'password must be a string' unless password.is_a?(String) && !password.empty?
+      raise ArgumentError, 'xsalt must be a string' unless xsalt.is_a?(String)
+      raise ArgumentError, 'xsalt must be a hex string' unless xsalt =~ /^[a-fA-F0-9]+$/
+      raise ArgumentError, 'xbb must be a string' unless xbb.is_a?(String)
+      raise ArgumentError, 'xbb must be a hex string' unless xbb =~ /^[a-fA-F0-9]+$/
+
       # Convert the 'B' hex value to an Integer
       bb = xbb.to_i(16)
 
@@ -75,6 +85,9 @@ module SIRP
     # @return [true,false] returns true if the server and client agree on the H_AMK value, false if not
     def verify(server_HAMK)
       return false unless @H_AMK && server_HAMK
+      return false unless server_HAMK.is_a?(String)
+      return false unless server_HAMK =~ /^[a-fA-F0-9]+$/
+
       # Hash the comparison params to ensure that both strings
       # being compared are equal length 32 Byte strings.
       secure_compare(Digest::SHA256.hexdigest(@H_AMK), Digest::SHA256.hexdigest(server_HAMK))

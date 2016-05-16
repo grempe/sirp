@@ -7,7 +7,9 @@ module SIRP
     #
     # @param group [Integer] the group size in bits
     def initialize(group = 2048)
-      # select modulus (N) and generator (g)
+      raise ArgumentError, 'must be an Integer' unless group.is_a?(Integer)
+      raise ArgumentError, 'must be a known group size' unless [1024, 1536, 2048, 3072, 4096, 6144, 8192].include?(group)
+
       @N, @g, @hash = Ng(group)
       @k = calc_k(@N, @g, hash)
     end
@@ -24,6 +26,9 @@ module SIRP
     # @param password [String] the authentication password
     # @return [Hash] a Hash of the username, verifier, and salt
     def generate_userauth(username, password)
+      raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
+      raise ArgumentError, 'password must be a string' unless password.is_a?(String) && !password.empty?
+
       @salt ||= SecureRandom.hex(10)
       x = calc_x(username, password, @salt, hash)
       v = calc_v(x, @N, @g)
@@ -39,6 +44,14 @@ module SIRP
     # @param xaa [String] the client provided 'A' value in hex
     # @return [Hash] a Hash with the challenge for the client and a proof for the server
     def get_challenge_and_proof(username, xverifier, xsalt, xaa)
+      raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
+      raise ArgumentError, 'xverifier must be a string' unless xverifier.is_a?(String)
+      raise ArgumentError, 'xverifier must be a hex string' unless xverifier =~ /^[a-fA-F0-9]+$/
+      raise ArgumentError, 'xsalt must be a string' unless xsalt.is_a?(String)
+      raise ArgumentError, 'xsalt must be a hex string' unless xsalt =~ /^[a-fA-F0-9]+$/
+      raise ArgumentError, 'xaa must be a string' unless xaa.is_a?(String)
+      raise ArgumentError, 'xaa must be a hex string' unless xaa =~ /^[a-fA-F0-9]+$/
+
       # SRP-6a safety check
       return false if (xaa.to_i(16) % @N).zero?
 
@@ -72,6 +85,11 @@ module SIRP
     # @param client_M [String] the client provided 'M' value in hex
     # @return [String, false] the H_AMK value in hex for the client, or false if verification failed
     def verify_session(proof, client_M)
+      raise ArgumentError, 'proof must be a hash' unless proof.is_a?(Hash)
+      raise ArgumentError, 'proof must have required hash keys' unless proof.keys == [:A, :B, :b, :I, :s, :v]
+      raise ArgumentError, 'client_M must be a string' unless client_M.is_a?(String)
+      raise ArgumentError, 'client_M must be a hex string' unless client_M =~ /^[a-fA-F0-9]+$/
+
       @A = proof[:A]
       @B = proof[:B]
       @b = proof[:b].to_i(16)
