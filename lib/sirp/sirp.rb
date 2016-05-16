@@ -1,19 +1,50 @@
 module SIRP
-  # http://stackoverflow.com/questions/3772410/convert-a-string-of-0-f-into-a-byte-array-in-ruby
+
+  # Convert a hex string to an a array of Integer bytes by first converting
+  # the String to hex, and then converting that hex to an Array of Integer bytes.
+  #
+  # @param str [String] a string to convert
+  # @return [Array<Integer>] an Array of Integer bytes
   def hex_to_bytes(str)
     [str].pack('H*').unpack('C*')
   end
 
+  # Convert a number to a downcased hex string, prepending '0' to the
+  # hex string if the hex conversion resulted in an odd length string.
+  #
+  # @param num [Integer] a number to convert to a hex string
+  # @return [String] a hex string
   def num_to_hex(num)
     hex_str = num.to_s(16)
     even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
     even_hex_str.downcase
   end
 
+  # Applies a one-way hash function, either SHA1 or SHA256, on an
+  # unpacked hex string. It will generate the same
+  # one-way hash value for a string that has been unpacked as if the
+  # hash function had been applied to the string directly.
+  #
+  #    'foo'.unpack('H*')
+  #    => ["666f6f"]
+  #
+  #    > sha_hex('foo'.unpack('H*')[0], Digest::SHA256)
+  #    => "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+  #    > Digest::SHA256.hexdigest 'foo'
+  #    => "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+  #
+  # @param h [String] a hex string to hash
+  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
+  # @return [String] a hex string representing the result of the one way hash function
   def sha_hex(h, hash_klass)
     hash_klass.hexdigest([h].pack('H*'))
   end
 
+  # Applies a one-way hash function, either SHA1 or SHA256, on the string provided.
+  #
+  # @param s [String] a string to hash
+  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
+  # @return [String] a hex string representing the result of the one way hash function
   def sha_str(s, hash_klass)
     hash_klass.hexdigest(s)
   end
@@ -69,7 +100,7 @@ module SIRP
   end
 
   # Multiplier parameter
-  # k = H(N, g)   (in SIRP-6a)
+  # k = H(N, g)   (in SRP-6a)
   def calc_k(n, g, hash_klass)
     H(hash_klass, n, n, g)
   end

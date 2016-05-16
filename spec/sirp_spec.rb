@@ -34,13 +34,17 @@ describe SIRP do
 
   context 'sha_hex' do
     it 'should calculate expected results for SHA1' do
-      expect(sha_hex('e8d4a50fff', Digest::SHA1))
-        .to eq '62b225b459b48a52f68064f15fd464c200645a92'
+      str = 'foo'
+      str_unpacked = str.unpack('H*')[0]
+      str_sha = Digest::SHA1.hexdigest(str)
+      expect(sha_hex(str_unpacked, Digest::SHA1)).to eq str_sha
     end
 
     it 'should calculate expected results for SHA256' do
-      expect(sha_hex('e8d4a50fff', Digest::SHA256))
-        .to eq '50cc877b5c7fe308b204f5b57bc1ac8e6fbd02fe2b50efc3b535af8490feb31a'
+      str = 'foo'
+      str_unpacked = str.unpack('H*')[0]
+      str_sha = Digest::SHA256.hexdigest(str)
+      expect(sha_hex(str_unpacked, Digest::SHA256)).to eq str_sha
     end
   end
 
