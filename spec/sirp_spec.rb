@@ -94,9 +94,9 @@ describe SIRP do
 
   context 'calc_x' do
     it 'should calculate expected results' do
-      x = calc_x(@username, @password, @salt, Digest::SHA1)
-      expect(('%x' % x)).to eq 'bdd0a4e1c9df4082684d8d358b8016301b025375'
-      expect(('%b' % x).length).to eq 160
+      x = calc_x(@username, @password, @salt)
+      expect(('%x' % x)).to eq 'e34be086aeade02b32e2941077b262664ad120d5146e3a96ab8069254860b14c'
+      expect(('%b' % x).length).to eq 256
     end
   end
 

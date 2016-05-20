@@ -50,7 +50,7 @@ module SIRP
       # SRP-6a safety check
       return false if (bb % @N).zero?
 
-      x = calc_x(username, password, xsalt, hash)
+      x = calc_x(username, password, xsalt)
       u = calc_u(@A, xbb, @N, hash)
 
       # SRP-6a safety check

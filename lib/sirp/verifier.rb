@@ -30,7 +30,7 @@ module SIRP
       raise ArgumentError, 'password must be a string' unless password.is_a?(String) && !password.empty?
 
       @salt ||= SecureRandom.hex(10)
-      x = calc_x(username, password, @salt, hash)
+      x = calc_x(username, password, @salt)
       v = calc_v(x, @N, @g)
       { username: username, verifier: num_to_hex(v), salt: @salt }
     end
