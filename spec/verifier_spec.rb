@@ -37,7 +37,7 @@ describe SIRP do
       v = auth[:verifier]
       salt = auth[:salt]
       expect(salt).to eq @salt
-      expect(v).to eq '321307d87ca3462f5b0cb5df295bea04498563794e5401899b2f32dd5cab5b7de9da78e7d62ea235e6d7f43a4ea09fea7c0dafdee6e79a1d12e2e374048deeaf5ba7c68e2ad952a3f5dc084400a7f1599a31d6d9d50269a9208db88f84090e8aa3c7b019f39529dcc19baa985a8d7ffb2d7628071d2313c9eaabc504d3333688'
+      expect(v).to eq 'a8b75c5a887cd27506bad148d24b00ef93d8a51418dd663508c394f34b657f62edb514fa67f67951a260d2e36d938a583b6a072b8fe93ca9305ea840e778e943e57e0c9cf8f360e415e27217c4397844074e5f2073096d3fbe04d472fa9dafb33dd3b341904754167031cd4f35f27c8a5c0b77a397516c2db20a0a4a3d0eb7f0'
     end
 
     it 'should generate salt and calculate verifier' do

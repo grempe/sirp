@@ -137,7 +137,7 @@ this verification at [https://www.rempe.us/keys/](https://www.rempe.us/keys/).
 This implementation has been tested for compatibility with the following SRP-6a
 compliant third-party libraries:
 
-[JSRP / JavaScript](https://github.com/alax/jsrp)
+[grempe/jsrp (JavaScript)](https://github.com/grempe/jsrp)
 
 ## SRP-6a Protocol Design
 
@@ -202,6 +202,62 @@ The two parties also employ the following safeguards:
 * The user must show his proof of K first. If the server detects that the
 user's proof is incorrect, it must abort without showing its own proof of K.
 ```
+
+### Implementation Decisions
+
+The interoperability of different implementations of SRP is elusive. The spec
+leaves a number of decisions up to the implementer. The choice of hashing
+algorithm (H) is left open, the method of verifying shared keys (H_AMK) is
+not clearly specified, and the generation of the Verifier (v) is not considered
+very strong by modern standards.
+
+It is also not specified how the client and server should exchange information
+over the wire (binary, hex, protobuf, etc).
+
+It is therefore no wonder that most implementations don't work together.
+
+This library has also made its own choices. This implementation provides Ruby
+code that makes a choice for strength where possible. This code is suitable for
+use as both a Ruby client and Ruby SRP server. There is also a JavaScript
+client based on the work of alax/jsrp which has been modified to be compatible.
+
+It is unlikely that any other implementation will just work out of the box. No
+support is provided for any other implementations not listed here.
+
+#### Hashing Algorithm
+
+The hashing algorithm used internally is either `SHA1` or `SHA256`. Only group sizes
+`1024` and `1536` use `SHA1` for legacy support, and the rest will use `SHA256`.
+
+This matches the choices made in the `jsrp` package.
+
+#### Calculating `x`
+
+The derivation of the private key `x` has been strengthened in this
+implementation and makes use of SHA256, HMAC-SHA256, and Scrypt. Scrypt
+is a modern memory and CPU hard key derivation function and is used
+to protect against the possibility of a brute-force attack on the Verifier.
+See the `calc_x` method in `lib/sirp/sirp.rb` for details.
+
+#### Proof of `K`
+
+According to the Wikipaedia page for Secure Remote Password implementations will
+often choose different methods to prove that the client and server have both
+negotiatied the same keys.
+
+```
+Carol → Steve: M1 = H[H(N) XOR H(g) | H(I) | s | A | B | KCarol]. Steve verifies M1.
+Steve → Carol: M2 = H(A | M1 | KSteve). Carol verifies M2.
+```
+
+and
+
+```
+Carol → Steve: M1 = H(A | B | SCarol). Steve verifies M1.
+Steve → Carol: M2 = H(A | M1 | SSteve). Carol verifies M2.
+```
+
+This implementation makes use of the second method. See `SIRP.calc_H_AMK`.
 
 ## Usage Example
 
