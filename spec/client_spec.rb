@@ -7,7 +7,7 @@ describe SIRP do
     before :all do
       @username = 'user'
       @password = 'password'
-      @salt     = '16ccfa081895fe1ed0bb'
+      @salt     = '01ebb2496e4e8d32e6f7967ee9fec64e'
       @a        = '7ec87196e320a2f8dfe8979b1992e0d34439d24471b62c40564bb4302866e1c2'
       @b        = '8143e2f299852a05717427ea9d87c6146e747d0da6e95f4390264e55a43ae96'
     end
@@ -45,8 +45,8 @@ describe SIRP do
       mm = client.process_challenge(@username, @password, @salt, bb)
 
       # Client keys
-      expect(client.S).to eq '8f3ba58c95e2e3b6b99eaed3e46c29f1fc44dbc47411ca24cd4e72998df90ccc8e54ad2c39f45a68d4c3aae2066aaf8f158205d34bc64b4a66623087de9a15f71b3023d5e7bc468a78f0f3b89d6b3ff6259aea0aef2ec0677df83901312305809de71cdf67e260a432d8c195c9a8e24452da2208691723a20fff571e8a5c7e31'
-      expect(client.K).to eq 'fe9581d9df8120ab7af338e015a362049a822ad3'
+      expect(client.S).to eq '7c495331341aa0d0b3fc67d2c7a03451c2a8842cd9d87a1d36cc70883f8bd54b9269caa722f675677bd9256865f3e4409ec676a03cbc344ed3acbc0d94177b3545800194a136bbbdc826f188810eed7bf547125d768808e5bad59c92be8f29eabe425925ae2339191d63ee7cc9f0c7406af62d907471f7cd3dd7ac2af085fcfb'
+      expect(client.K).to eq 'f99b03fae337287428db69a7be8e33d09ce164cc'
     end
 
     it 'should verify true with matching server H_AMK' do

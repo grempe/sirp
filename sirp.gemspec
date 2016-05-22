@@ -34,9 +34,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  # See : https://bugs.ruby-lang.org/issues/9569
   spec.add_runtime_dependency 'rbnacl-libsodium', '~> 1.0'
-  spec.add_runtime_dependency 'securer_randomer', '~> 0.1.0'
+  spec.add_runtime_dependency 'rbnacl', '~> 3.4.0'
 
   spec.add_development_dependency 'bundler', '~> 1.12'
   spec.add_development_dependency 'rake', '~> 11.0'
