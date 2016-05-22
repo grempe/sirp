@@ -29,7 +29,7 @@ module SIRP
       raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
       raise ArgumentError, 'password must be a string' unless password.is_a?(String) && !password.empty?
 
-      @salt ||= SecureRandom.hex(10)
+      @salt ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(16))
       x = calc_x(username, password, @salt)
       v = calc_v(x, @N, @g)
       { username: username, verifier: num_to_hex(v), salt: @salt }
@@ -57,7 +57,7 @@ module SIRP
 
       # Generate b and B
       v = xverifier.to_i(16)
-      @b ||= SecureRandom.hex(32).hex
+      @b ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(32)).hex
       @B = num_to_hex(calc_B(@b, k, v, @N, @g))
 
       {

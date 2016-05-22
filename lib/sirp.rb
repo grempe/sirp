@@ -1,6 +1,7 @@
 require 'openssl'
 require 'digest'
 require 'rbnacl/libsodium'
+require 'rbnacl'
 require 'sysrandom/securerandom'
 require 'hashie'
 require 'sirp/sirp'

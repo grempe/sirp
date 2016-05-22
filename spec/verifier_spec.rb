@@ -6,7 +6,7 @@ describe SIRP do
   before :all do
     @username = 'user'
     @password = 'password'
-    @salt = '16ccfa081895fe1ed0bb'
+    @salt = '01ebb2496e4e8d32e6f7967ee9fec64e'
     @a = '7ec87196e320a2f8dfe8979b1992e0d34439d24471b62c40564bb4302866e1c2'
     @b = '8143e2f299852a05717427ea9d87c6146e747d0da6e95f4390264e55a43ae96'
   end
@@ -37,7 +37,7 @@ describe SIRP do
       v = auth[:verifier]
       salt = auth[:salt]
       expect(salt).to eq @salt
-      expect(v).to eq 'a8b75c5a887cd27506bad148d24b00ef93d8a51418dd663508c394f34b657f62edb514fa67f67951a260d2e36d938a583b6a072b8fe93ca9305ea840e778e943e57e0c9cf8f360e415e27217c4397844074e5f2073096d3fbe04d472fa9dafb33dd3b341904754167031cd4f35f27c8a5c0b77a397516c2db20a0a4a3d0eb7f0'
+      expect(v).to eq '4bff0d5c5a5d587c585df736aa50802a347b645a90799c254c166a380d367e34291ddbecc88ab54148d032359c44cd43eb2f85b0eaa545aa54de834b91a0cfceab853189efac6327b1b48095c8aeb17acc1b0b582a56ae2f7a229d2cf60378455dc3082f5283c887c1047f5460016c46a632ae0dac8d934d3a9a7fe5221bd02b'
     end
 
     it 'should generate salt and calculate verifier' do
