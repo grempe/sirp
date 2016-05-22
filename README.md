@@ -15,7 +15,7 @@ which is a 'zero-knowledge' mutual authentication system.
 
 SRP is an protocol that allows for mutual authentication of a client and
 server over an insecure network connection without revealing the password to the
-server or an evesdropper. If the client lacks the user's password, or the server
+server or an eavesdropper. If the client lacks the user's password, or the server
 lacks the proper verification key, the authentication will fail. This approach
 is much more secure than the vast majority of authentication systems in common use
 since the password is never sent over the wire. The password is impossible to
