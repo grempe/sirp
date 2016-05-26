@@ -64,7 +64,7 @@ module SIRP
       @M = calc_M(@A, xbb, @K, hash)
 
       # Calculate the H(A,M,K) verifier
-      @H_AMK = num_to_hex(calc_H_AMK(@A, @M, @K, hash))
+      @H_AMK = calc_H_AMK(@A, @M, @K, hash)
 
       # Return the 'M' matcher to be sent to the server
       @M

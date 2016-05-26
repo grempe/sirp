@@ -137,7 +137,7 @@ describe SIRP do
       xmm = 'd597503056af882d5b27b419302ac7b2ea9d7468'
       xkk = '5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67'
       h_amk = calc_H_AMK(xaa, xmm, xkk, Digest::SHA1)
-      expect(('%x' % h_amk)).to eq '530fccc1c4aa82ae5c5cdfa8bdec987c6032451d'
+      expect(h_amk).to eq '530fccc1c4aa82ae5c5cdfa8bdec987c6032451d'
     end
   end
 end
