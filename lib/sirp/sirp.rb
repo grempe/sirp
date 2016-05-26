@@ -124,8 +124,14 @@ module SIRP
   end
 
   # H(A, M, K)
+  #
+  # @param xaa [String] the 'A' value in hex
+  # @param xmm [String] the 'M' value in hex
+  # @param xkk [String] the 'K' value in hex
+  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
+  # @return [String] the 'H_AMK' value in hex
   def calc_H_AMK(xaa, xmm, xkk, hash_klass)
     byte_string = hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
-    sha_str(byte_string, hash_klass).hex
+    sha_str(byte_string, hash_klass)
   end
 end

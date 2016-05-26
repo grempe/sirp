@@ -111,7 +111,7 @@ module SIRP
       # that both strings being compared are equal length 32 Byte strings.
       if secure_compare(Digest::SHA256.hexdigest(@M), Digest::SHA256.hexdigest(client_M))
         # Authentication succeeded, Calculate the H(A,M,K) verifier
-        @H_AMK = num_to_hex(calc_H_AMK(@A, @M, @K, hash))
+        @H_AMK = calc_H_AMK(@A, @M, @K, hash)
       else
         # Authentication failed
         nil
