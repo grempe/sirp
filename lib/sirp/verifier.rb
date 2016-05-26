@@ -53,7 +53,7 @@ module SIRP
       raise ArgumentError, 'xaa must be a hex string' unless xaa =~ /^[a-fA-F0-9]+$/
 
       # SRP-6a safety check
-      return false if (xaa.to_i(16) % @N).zero?
+      return nil if (xaa.to_i(16) % @N).zero?
 
       # Generate b and B
       v = xverifier.to_i(16)
@@ -73,7 +73,7 @@ module SIRP
     # Phase 2 : Step 2 : Use the server stored proof and the client provided 'M' value.
     # Calculates a server 'M' value and compares it to the client provided one,
     # and if they match the client and server have negotiated equal secrets.
-    # Returns a H(A, M, K) value on success and false on failure.
+    # Returns a H(A, M, K) value on success and nil on failure.
     #
     # Sets the @K value, which is the client and server negotiated secret key
     # if verification succeeds. This can be used to derive strong encryption keys
@@ -83,7 +83,7 @@ module SIRP
     #
     # @param proof [Hash] the server stored proof Hash with keys A, B, b, I, s, v
     # @param client_M [String] the client provided 'M' value in hex
-    # @return [String, false] the H_AMK value in hex for the client, or false if verification failed
+    # @return [String, nil] the H_AMK value in hex for the client, or nil if verification failed
     def verify_session(proof, client_M)
       raise ArgumentError, 'proof must be a hash' unless proof.is_a?(Hash)
       raise ArgumentError, 'proof must have required hash keys' unless proof.keys == [:A, :B, :b, :I, :s, :v]
@@ -98,7 +98,7 @@ module SIRP
       u = calc_u(@A, @B, @N, hash)
 
       # SRP-6a safety check
-      return false if u.zero?
+      return nil if u.zero?
 
       # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_server_S(@A.to_i(16), @b, v, u, @N))
@@ -114,7 +114,7 @@ module SIRP
         @H_AMK = num_to_hex(calc_H_AMK(@A, @M, @K, hash))
       else
         # Authentication failed
-        false
+        nil
       end
     end
   end

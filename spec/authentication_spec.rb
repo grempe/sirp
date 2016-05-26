@@ -64,7 +64,7 @@ describe SIRP do
       # phase 2 (server)
       proof = { A: aa, B: cp[:proof][:B], b: cp[:proof][:b], I: @username, s: salt, v: v }
       server_H_AMK = verifier.verify_session(proof, client_M)
-      expect(server_H_AMK).to be false
+      expect(server_H_AMK).to be nil
 
       # phase 2 (client)
       expect(client.verify(server_H_AMK)).to be false
