@@ -35,7 +35,7 @@ module SIRP
     # @param password [String] the client provided authentication password
     # @param xsalt [String] the server provided salt for the username in hex
     # @param xbb [String] the server verifier 'B' value in hex
-    # @return [String] the client 'M' value in hex
+    # @return [String, nil] the client 'M' value in hex, or nil if safety checks fail
     def process_challenge(username, password, xsalt, xbb)
       raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
       raise ArgumentError, 'password must be a string' unless password.is_a?(String) && !password.empty?
@@ -48,13 +48,13 @@ module SIRP
       bb = xbb.to_i(16)
 
       # SRP-6a safety check
-      return false if (bb % @N).zero?
+      return nil if (bb % @N).zero?
 
       x = calc_x(username, password, xsalt)
       u = calc_u(@A, xbb, @N, hash)
 
       # SRP-6a safety check
-      return false if u.zero?
+      return nil if u.zero?
 
       # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_client_S(bb, @a, @k, x, u, @N, @g))
