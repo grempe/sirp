@@ -4,6 +4,11 @@ module SIRP
   # http://rosettacode.org/wiki/Modular_exponentiation#Ruby
   #
   # a^b (mod m)
+  #
+  # @param a [Bignum] the base value as a Bignum
+  # @param b [Bignum] the exponent value as a Bignum
+  # @param m [Bignum] the modulus value as a Bignum
+  # @return [Bignum] the solution as a Bignum
   def mod_exp(a, b, m)
     # Use OpenSSL::BN#mod_exp
     a.to_bn.mod_exp(b, m)
