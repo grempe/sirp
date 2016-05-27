@@ -32,7 +32,7 @@ module SIRP
     H(hash_klass, n, n, g)
   end
 
-  # Private key (derived from username, raw password and salt)
+  # Private Key (derived from username, password and salt)
   #
   # The spec calls for calculating 'x' using:
   #
@@ -73,6 +73,10 @@ module SIRP
   #
   # The value returned should be the final HMAC_SHA256 hex converted to an Integer
   #
+  # @param username [String] the 'username' (I) as a String
+  # @param password [String] the 'password' (p) as a String
+  # @param salt [String] the 'salt' in hex
+  # @return [Bignum] the Scrypt+HMAC stretched 'x' value as a Bignum
   def calc_x(username, password, salt)
     prehash_pw = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), 'srp-x-1', password)
     int_key = RbNaCl::PasswordHash.scrypt(prehash_pw, salt.force_encoding('BINARY'), 2**19, 2**24, 32)
