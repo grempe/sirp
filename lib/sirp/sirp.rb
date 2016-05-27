@@ -110,8 +110,15 @@ module SIRP
 
   # Server secret
   # S = (A * v^u) ^ b % N
-  def calc_server_S(aa, b, v, u, n)
-    mod_exp((mod_exp(v, u, n) * aa), b, n)
+  #
+  # @param aa [Bignum] the 'A' value as a Bignum
+  # @param b [Bignum] the 'b' value as a Bignum
+  # @param v [Bignum] the 'v' value as a Bignum
+  # @param u [Bignum] the 'u' value as a Bignum
+  # @param nn [Bignum] the 'N' value as a Bignum
+  # @return [Bignum] the 'S' value as a Bignum
+  def calc_server_S(aa, b, v, u, nn)
+    mod_exp(aa * mod_exp(v, u, nn), b, nn)
   end
 
   # M = H(A, B, K)
