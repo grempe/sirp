@@ -115,6 +115,12 @@ module SIRP
   end
 
   # M = H(A, B, K)
+  #
+  # @param xaa [String] the 'A' value in hex
+  # @param xbb [String] the 'B' value in hex
+  # @param xkk [String] the 'K' value in hex
+  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
+  # @return [String] the 'M' value in hex
   def calc_M(xaa, xbb, xkk, hash_klass)
     digester = hash_klass.new
     digester << hex_to_bytes(xaa).pack('C*')
