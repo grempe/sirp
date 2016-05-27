@@ -26,10 +26,15 @@ module SIRP
     sha_hex(hashin, hash_klass).hex % n
   end
 
-  # Multiplier parameter
-  # k = H(N, g)   (in SRP-6a)
-  def calc_k(n, g, hash_klass)
-    H(hash_klass, n, n, g)
+  # Multiplier Parameter
+  # k = H(N, g) (in SRP-6a)
+  #
+  # @param nn [Bignum] the 'N' value as a Bignum
+  # @param g [Bignum] the 'g' value as a Bignum
+  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
+  # @return [Bignum] the 'k' value as a Bignum
+  def calc_k(nn, g, hash_klass)
+    H(hash_klass, nn, nn, g)
   end
 
   # Private Key (derived from username, password and salt)
