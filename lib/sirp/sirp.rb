@@ -80,10 +80,16 @@ module SIRP
     x_hex.hex
   end
 
-  # Random scrambling parameter
+  # Random Scrambling Parameter
   # u = H(A, B)
-  def calc_u(xaa, xbb, n, hash_klass)
-    H(hash_klass, n, xaa, xbb)
+  #
+  # @param xaa [String] the 'A' value in hex
+  # @param xbb [String] the 'B' value in hex
+  # @param nn [Bignum] the 'N' value as a Bignum
+  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
+  # @return [Bignum] the 'u' value as a Bignum
+  def calc_u(xaa, xbb, nn, hash_klass)
+    H(hash_klass, nn, xaa, xbb)
   end
 
   # Password Verifier
