@@ -86,10 +86,15 @@ module SIRP
     H(hash_klass, n, xaa, xbb)
   end
 
-  # Password verifier
+  # Password Verifier
   # v = g^x (mod N)
-  def calc_v(x, n, g)
-    mod_exp(g, x, n)
+  #
+  # @param x [Bignum] the 'x' value as a Bignum
+  # @param nn [Bignum] the 'N' value as a Bignum
+  # @param g [Bignum] the 'g' value as a Bignum
+  # @return [Bignum] the client 'v' value as a Bignum
+  def calc_v(x, nn, g)
+    mod_exp(g, x, nn)
   end
 
   # Client Ephemeral Value
