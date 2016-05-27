@@ -9,7 +9,7 @@ module SIRP
   # @param b [Bignum] the exponent value as a Bignum
   # @param m [Bignum] the modulus value as a Bignum
   # @return [Bignum] the solution as a Bignum
-  def mod_exp(a, b, m)
+  def mod_pow(a, b, m)
     # Use OpenSSL::BN#mod_exp
     a.to_bn.mod_exp(b, m)
   end
@@ -114,7 +114,7 @@ module SIRP
   # @param g [Bignum] the 'g' value as a Bignum
   # @return [Bignum] the client 'v' value as a Bignum
   def calc_v(x, nn, g)
-    mod_exp(g, x, nn)
+    mod_pow(g, x, nn)
   end
 
   # Client Ephemeral Value
@@ -125,7 +125,7 @@ module SIRP
   # @param g [Bignum] the 'g' value as a Bignum
   # @return [Bignum] the client ephemeral 'A' value as a Bignum
   def calc_A(a, nn, g)
-    mod_exp(g, a, nn)
+    mod_pow(g, a, nn)
   end
 
   # Server Ephemeral Value
@@ -138,7 +138,7 @@ module SIRP
   # @param g [Bignum] the 'g' value as a Bignum
   # @return [Bignum] the verifier ephemeral 'B' value as a Bignum
   def calc_B(b, k, v, nn, g)
-    (k * v + mod_exp(g, b, nn)) % nn
+    (k * v + mod_pow(g, b, nn)) % nn
   end
 
   # Client Session Key
@@ -153,7 +153,7 @@ module SIRP
   # @param g [Bignum] the 'g' value as a Bignum
   # @return [Bignum] the client 'S' value as a Bignum
   def calc_client_S(bb, a, k, x, u, nn, g)
-    mod_exp((bb - k * mod_exp(g, x, nn)), a + u * x, nn)
+    mod_pow((bb - k * mod_pow(g, x, nn)), a + u * x, nn)
   end
 
   # Server Session Key
@@ -166,7 +166,7 @@ module SIRP
   # @param nn [Bignum] the 'N' value as a Bignum
   # @return [Bignum] the verifier 'S' value as a Bignum
   def calc_server_S(aa, b, v, u, nn)
-    mod_exp(aa * mod_exp(v, u, nn), b, nn)
+    mod_pow(aa * mod_pow(v, u, nn), b, nn)
   end
 
   # M = H(A, B, K)
