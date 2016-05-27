@@ -97,9 +97,17 @@ module SIRP
     mod_exp(g, a, n)
   end
 
-  # B = g^b + k v (mod N)
-  def calc_B(b, k, v, n, g)
-    (mod_exp(g, b, n) + k * v) % n
+  # Server Ephemeral Value
+  # B = kv + g^b % N
+  #
+  # @param b [Bignum] the 'b' value as a Bignum
+  # @param k [Bignum] the 'k' value as a Bignum
+  # @param v [Bignum] the 'v' value as a Bignum
+  # @param nn [Bignum] the 'N' value as a Bignum
+  # @param g [Bignum] the 'g' value as a Bignum
+  # @return [Bignum] the verifier ephemeral 'B' value as a Bignum
+  def calc_B(b, k, v, nn, g)
+    (k * v + mod_exp(g, b, nn)) % nn
   end
 
   # Client Session Key
