@@ -92,9 +92,15 @@ module SIRP
     mod_exp(g, x, n)
   end
 
+  # Client Ephemeral Value
   # A = g^a (mod N)
-  def calc_A(a, n, g)
-    mod_exp(g, a, n)
+  #
+  # @param a [Bignum] the 'a' value as a Bignum
+  # @param nn [Bignum] the 'N' value as a Bignum
+  # @param g [Bignum] the 'g' value as a Bignum
+  # @return [Bignum] the client ephemeral 'A' value as a Bignum
+  def calc_A(a, nn, g)
+    mod_exp(g, a, nn)
   end
 
   # Server Ephemeral Value
