@@ -102,13 +102,22 @@ module SIRP
     (mod_exp(g, b, n) + k * v) % n
   end
 
-  # Client secret
+  # Client Session Key
   # S = (B - (k * g^x)) ^ (a + (u * x)) % N
-  def calc_client_S(bb, a, k, x, u, n, g)
-    mod_exp((bb - k * mod_exp(g, x, n)) % n, (a + x * u), n)
+  #
+  # @param bb [Bignum] the 'B' value as a Bignum
+  # @param a [Bignum] the 'a' value as a Bignum
+  # @param k [Bignum] the 'k' value as a Bignum
+  # @param x [Bignum] the 'x' value as a Bignum
+  # @param u [Bignum] the 'u' value as a Bignum
+  # @param nn [Bignum] the 'N' value as a Bignum
+  # @param g [Bignum] the 'g' value as a Bignum
+  # @return [Bignum] the client 'S' value as a Bignum
+  def calc_client_S(bb, a, k, x, u, nn, g)
+    mod_exp((bb - k * mod_exp(g, x, nn)), a + u * x, nn)
   end
 
-  # Server secret
+  # Server Session Key
   # S = (A * v^u) ^ b % N
   #
   # @param aa [Bignum] the 'A' value as a Bignum
@@ -116,7 +125,7 @@ module SIRP
   # @param v [Bignum] the 'v' value as a Bignum
   # @param u [Bignum] the 'u' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @return [Bignum] the 'S' value as a Bignum
+  # @return [Bignum] the verifier 'S' value as a Bignum
   def calc_server_S(aa, b, v, u, nn)
     mod_exp(aa * mod_exp(v, u, nn), b, nn)
   end
