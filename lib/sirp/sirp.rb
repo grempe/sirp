@@ -33,7 +33,7 @@ module SIRP
       '0' * (nlen - shex.length) + shex
     end.join('')
 
-    sha_hex(hashin, hash_klass).hex % nn
+    hash_klass.hexdigest([hashin].pack('H*')).hex
   end
   # FIXME : Can't specify Any for a *a arg
   # typesig :H, [:hexdigest, Integer, Any] => Bignum

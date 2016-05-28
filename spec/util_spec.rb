@@ -20,22 +20,6 @@ describe SIRP do
     end
   end
 
-  context 'sha_hex' do
-    it 'should calculate expected results for SHA1' do
-      str = 'foo'
-      str_unpacked = str.unpack('H*')[0]
-      str_sha = Digest::SHA1.hexdigest(str)
-      expect(sha_hex(str_unpacked, Digest::SHA1)).to eq str_sha
-    end
-
-    it 'should calculate expected results for SHA256' do
-      str = 'foo'
-      str_unpacked = str.unpack('H*')[0]
-      str_sha = Digest::SHA256.hexdigest(str)
-      expect(sha_hex(str_unpacked, Digest::SHA256)).to eq str_sha
-    end
-  end
-
   context 'secure_compare' do
     it 'should return true when string args match' do
       expect(secure_compare('foo', 'foo')).to be true

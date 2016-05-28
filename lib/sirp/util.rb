@@ -21,27 +21,6 @@ module SIRP
   end
   typesig :num_to_hex, [Integer] => String
 
-  # Applies a one-way hash function, either SHA1 or SHA256, on an
-  # unpacked hex string. It will generate the same
-  # one-way hash value for a string that has been unpacked as if the
-  # hash function had been applied to the string directly.
-  #
-  #    'foo'.unpack('H*')
-  #    => ["666f6f"]
-  #
-  #    > sha_hex('foo'.unpack('H*')[0], Digest::SHA256)
-  #    => "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
-  #    > Digest::SHA256.hexdigest 'foo'
-  #    => "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
-  #
-  # @param h [String] a hex string to hash
-  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
-  # @return [String] a hex string representing the result of the one way hash function
-  def sha_hex(h, hash_klass)
-    hash_klass.hexdigest([h].pack('H*'))
-  end
-  typesig :sha_hex, [String, :hexdigest] => String
-
   # Constant time string comparison.
   # Extracted from Rack::Utils
   # https://github.com/rack/rack/blob/master/lib/rack/utils.rb
