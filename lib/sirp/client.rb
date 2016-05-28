@@ -50,7 +50,7 @@ module SIRP
       return nil if (bb % @N).zero?
 
       x = calc_x(username, password, xsalt)
-      u = calc_u(@A, xbb, @N, hash)
+      u = calc_u(@A, xbb, hash)
 
       # SRP-6a safety check
       return nil if u.zero?

@@ -18,7 +18,8 @@ describe SIRP do
 
     it 'should calculate k' do
       k = SIRP::Verifier.new(1024).k
-      expect(k).to eq '7556aa045aef2cdd07abaf0f665c3e818913186f'.to_i(16)
+      # 1451834118826438586373135923147217324909710544769.to_s(16)
+      expect(k).to eq 'fe4e7e548761718eef3f3eb73454916dd4700f81'.to_i(16)
     end
   end
 
@@ -84,7 +85,7 @@ describe SIRP do
       cp = verifier.get_challenge_and_proof(@username, v, @auth[:salt], @auth[:verifier])
       expect(('%b' % cp[:proof][:b].to_i(16)).length).to be > 200
       expect(('%b' % cp[:challenge][:B].to_i(16)).length).to be >= 1000
-      expect(cp[:challenge][:B]).to eq '56777d24af1121bd6af6aeb84238ff8d250122fe75ed251db0f47c289642ae7adb9ef319ce3ab23b6ecc97e5904749fc42f12bb016ecf39691db541f066667b8399bfa685c82b03ad8f92f75975ed086dbe0d470d4dd907ce11b19ee41b74aee72bd8445cde6b58c01f678e39ed9cd6b93c79382637df90777a96c10a768c510'
+      expect(cp[:challenge][:B]).to eq '1869439094d80e6e2defd5a5efa7e7e1f5808cbc9973ebdd4470fbfa1cff980edd71894d73ce4d66da6227947ba4ab83b5e373887f32a3ca6ead8586ccec1379c8fe17b01091fcdbc19500f2ce5c716d9173bbba76132199927b2622eda849d1c26f11e6b13d5ea19c086c1092445277332c6dddcd17ae45ba0099d8738ecca7'
     end
   end
 

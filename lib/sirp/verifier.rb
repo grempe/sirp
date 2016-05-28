@@ -92,7 +92,7 @@ module SIRP
       @b = proof[:b].to_i(16)
       v = proof[:v].to_i(16)
 
-      u = calc_u(@A, @B, @N, hash)
+      u = calc_u(@A, @B, hash)
 
       # SRP-6a safety check
       return nil if u.zero?

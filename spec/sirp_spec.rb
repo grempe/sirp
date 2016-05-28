@@ -29,23 +29,17 @@ describe SIRP do
 
   context 'H' do
     it 'should calculate expected results' do
-      a = 2988348162058574136915891421498819466320163312926952423791023078876139
       b = 2351399303373464486466122544523690094744975233415544072992656881240319
-      c = H(Digest::SHA1, a, b)
+      c = H(Digest::SHA1, [b])
       expect(c).to eq 870206349645559849154987479939336526106829135959
-    end
-
-    it 'should raise an error when given invalid args' do
-      expect { H(Digest::SHA1, 1, '123456789abcdef') }
-        .to raise_error(RuntimeError, 'Bit width does not match - client uses different prime')
     end
   end
 
   context 'calc_k' do
     it 'should calculate expected results' do
       k = calc_k(@N, @g, Digest::SHA1)
-      expect(('%x' % k)).to eq 'dbe5dfe0704fee4c85ff106ecd38117d33bcfe50'
-      expect(('%b' % k).length).to eq 160
+      expect(('%x' % k)).to eq '601eb8578644f21bf6d06e8a57ed40499fa7236'
+      expect(('%b' % k).length).to eq 155
     end
   end
 
@@ -63,8 +57,8 @@ describe SIRP do
     it 'should calculate expected results' do
       aa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       bb = 'fbc56086bb51e26ee1a8287c0a7f3fd4e067e55beb8530b869b10b961957ff68'
-      u = calc_u(aa, bb, @N, Digest::SHA1)
-      expect(('%x' % u)).to eq 'c60b17ddf568dd5743d0e3ba5621646b742432c5'
+      u = calc_u(aa, bb, Digest::SHA1)
+      expect(('%x' % u)).to eq 'ecad013eb1355a22b9988b024df27a5708c73258'
       expect(('%b' % u).length).to eq 160
     end
   end
