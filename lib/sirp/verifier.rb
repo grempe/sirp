@@ -81,7 +81,7 @@ module SIRP
     #
     # @param proof [Hash] the server stored proof Hash with keys A, B, b, I, s, v
     # @param client_M [String] the client provided 'M' value in hex
-    # @return [String, nil] the H_AMK value in hex for the client, or nil if verification failed
+    # @return [String] the H_AMK value in hex for the client, or empty string if verification failed
     def verify_session(proof, client_M)
       raise ArgumentError, 'proof must have required hash keys' unless proof.keys == [:A, :B, :b, :I, :s, :v]
       raise ArgumentError, 'client_M must be a hex string' unless client_M =~ /^[a-fA-F0-9]+$/
@@ -106,10 +106,10 @@ module SIRP
         # Authentication succeeded, Calculate the H(A,M,K) verifier
         @H_AMK = calc_H_AMK(@A, @M, @K, hash)
       else
-        # Authentication failed
-        nil
+        # Authentication failed : Do not return H_AMK!
+        ''
       end
     end
-    typesig :verify_session, [Hash, String] => Any
+    typesig :verify_session, [Hash, String] => String
   end
 end
