@@ -14,9 +14,6 @@ module SIRP
     # Convert back to a Bignum so OpenSSL::BN doesn't leak everywhere
     a.to_bn.mod_exp(b, m).to_i
   end
-  # Specify Integer type for 'a' as that covers both Fixnum
-  # and Bignum. Fixnum vs. Bignum :
-  #   http://miha.filej.net/ruby-numeric
   typesig :mod_pow, [Integer, Integer, Integer] => Bignum
 
   # One-Way Hash Function
@@ -150,7 +147,7 @@ module SIRP
   def calc_B(b, k, v, nn, g)
     (k * v + mod_pow(g, b, nn)) % nn
   end
-  typesig :calc_B, [Integer, Integer, Integer, Integer, Integer] => Integer
+  typesig :calc_B, [Integer, Integer, Integer, Integer, Integer] => Bignum
 
   # Client Session Key
   # S = (B - (k * g^x)) ^ (a + (u * x)) % N
