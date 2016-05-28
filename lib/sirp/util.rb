@@ -68,7 +68,11 @@ module SIRP
   # @param b [String] the user provided value
   # @return [true, false] whether the strings match or not
   def secure_compare(a, b)
+    # Do all comparisons on equal length hashes of the inputs
+    a = Digest::SHA256.hexdigest(a)
+    b = Digest::SHA256.hexdigest(b)
     return false unless a.bytesize == b.bytesize
+
 
     l = a.unpack('C*')
 

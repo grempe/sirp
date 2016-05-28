@@ -104,9 +104,7 @@ module SIRP
       # Calculate the 'M' matcher
       @M = calc_M(@A, @B, @K, hash)
 
-      # Secure constant time comparison, hash the params to ensure
-      # that both strings being compared are equal length 32 Byte strings.
-      if secure_compare(Digest::SHA256.hexdigest(@M), Digest::SHA256.hexdigest(client_M))
+      if secure_compare(@M, client_M)
         # Authentication succeeded, Calculate the H(A,M,K) verifier
         @H_AMK = calc_H_AMK(@A, @M, @K, hash)
       else

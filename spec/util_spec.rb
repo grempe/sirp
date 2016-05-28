@@ -56,15 +56,5 @@ describe SIRP do
     it 'should return false when string args do not match' do
       expect(secure_compare('foo', 'bar')).to be false
     end
-
-    it 'should return true when hash string args match' do
-      expect(secure_compare(Digest::SHA256.hexdigest('foo'),
-        Digest::SHA256.hexdigest('foo'))).to be true
-    end
-
-    it 'should return false when hash string args do not match' do
-      expect(secure_compare(Digest::SHA256.hexdigest('foo'),
-        Digest::SHA256.hexdigest('bar'))).to be false
-    end
   end
 end

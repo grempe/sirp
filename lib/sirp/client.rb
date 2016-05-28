@@ -87,10 +87,7 @@ module SIRP
     def verify(server_HAMK)
       return false unless @H_AMK
       return false unless server_HAMK =~ /^[a-fA-F0-9]+$/
-
-      # Hash the comparison params to ensure that both strings
-      # being compared are equal length 32 Byte strings.
-      secure_compare(Digest::SHA256.hexdigest(@H_AMK), Digest::SHA256.hexdigest(server_HAMK))
+      secure_compare(@H_AMK, server_HAMK)
     end
     typesig :verify, [String] => Boolean
   end
