@@ -50,8 +50,7 @@ module SIRP
       raise ArgumentError, 'xsalt must be a hex string' unless xsalt =~ /^[a-fA-F0-9]+$/
       raise ArgumentError, 'xaa must be a hex string' unless xaa =~ /^[a-fA-F0-9]+$/
 
-      # SRP-6a safety check
-      return nil if (xaa.to_i(16) % @N).zero?
+      raise 'SRP-6a Safety Check : A.to_i(16) % N cannot equal 0' if (xaa.to_i(16) % @N).zero?
 
       # Generate b and B
       v = xverifier.to_i(16)
@@ -63,7 +62,7 @@ module SIRP
         proof: { A: xaa, B: @B, b: num_to_hex(@b), I: username, s: xsalt, v: xverifier }
       }
     end
-    typesig :get_challenge_and_proof, [String, String, String, String] => Any
+    typesig :get_challenge_and_proof, [String, String, String, String] => Hash
 
     #
     # Phase 2 : Step 1 : See Client#start_authentication
@@ -94,8 +93,7 @@ module SIRP
 
       u = calc_u(@A, @B, hash)
 
-      # SRP-6a safety check
-      return nil if u.zero?
+      raise 'SRP-6a Safety Check : u cannot equal 0' if u.zero?
 
       # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_server_S(@A.to_i(16), @b, v, u, @N))

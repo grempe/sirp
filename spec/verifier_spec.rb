@@ -52,12 +52,12 @@ describe SIRP do
   end
 
   context 'get_challenge_and_proof' do
-    it 'SRP6a Safety : should return false if A % N == 0' do
+    it 'should raise if A % N == 0' do
       verifier = SIRP::Verifier.new(1024)
       @auth = verifier.generate_userauth('foo', 'bar')
       nn = verifier.N
       verifier.set_aa(nn.to_s(16))
-      expect(verifier.get_challenge_and_proof(@username, @auth[:verifier], @auth[:salt], verifier.A)).to be nil
+      expect { verifier.get_challenge_and_proof(@username, @auth[:verifier], @auth[:salt], verifier.A) }.to raise_error(RuntimeError, 'SRP-6a Safety Check : A.to_i(16) % N cannot equal 0')
     end
 
     it 'should return expected results' do
