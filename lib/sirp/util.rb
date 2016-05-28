@@ -19,9 +19,7 @@ module SIRP
     even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
     even_hex_str.downcase
   end
-  # FIXME : normalize the type of the input for num, now it receives
-  # Fixnum, Bignum, and OpenSSL::BN depending on who is calling.
-  typesig :num_to_hex, [Any] => String
+  typesig :num_to_hex, [Integer] => String
 
   # Applies a one-way hash function, either SHA1 or SHA256, on an
   # unpacked hex string. It will generate the same

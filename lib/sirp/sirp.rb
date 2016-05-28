@@ -10,13 +10,14 @@ module SIRP
   # @param m [Bignum] the modulus value as a Bignum
   # @return [Bignum] the solution as a Bignum
   def mod_pow(a, b, m)
-    # Use OpenSSL::BN#mod_exp
-    a.to_bn.mod_exp(b, m)
+    # Convert type and use OpenSSL::BN#mod_exp to do the calculation
+    # Convert back to a Bignum so OpenSSL::BN doesn't leak everywhere
+    a.to_bn.mod_exp(b, m).to_i
   end
   # Specify Integer type for 'a' as that covers both Fixnum
   # and Bignum. Fixnum vs. Bignum :
   #   http://miha.filej.net/ruby-numeric
-  typesig :mod_pow, [Integer, Integer, Integer] => OpenSSL::BN
+  typesig :mod_pow, [Integer, Integer, Integer] => Bignum
 
   # Hashing function with padding.
   # Input is prefixed with 0 to meet N hex width.
@@ -121,11 +122,11 @@ module SIRP
   # @param x [Bignum] the 'x' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
   # @param g [Bignum] the 'g' value as a Bignum
-  # @return [OpenSSL::BN] the client 'v' value as a Bignum
+  # @return [Bignum] the client 'v' value as a Bignum
   def calc_v(x, nn, g)
     mod_pow(g, x, nn)
   end
-  typesig :calc_v, [Integer, Integer, Integer] => OpenSSL::BN
+  typesig :calc_v, [Integer, Integer, Integer] => Bignum
 
   # Client Ephemeral Value
   # A = g^a (mod N)
@@ -133,11 +134,11 @@ module SIRP
   # @param a [Bignum] the 'a' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
   # @param g [Bignum] the 'g' value as a Bignum
-  # @return [OpenSSL::BN] the client ephemeral 'A' value as a Bignum
+  # @return [Bignum] the client ephemeral 'A' value as a Bignum
   def calc_A(a, nn, g)
     mod_pow(g, a, nn)
   end
-  typesig :calc_A, [Integer, Integer, Integer] => OpenSSL::BN
+  typesig :calc_A, [Integer, Integer, Integer] => Bignum
 
   # Server Ephemeral Value
   # B = kv + g^b % N
@@ -163,11 +164,11 @@ module SIRP
   # @param u [Bignum] the 'u' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
   # @param g [Bignum] the 'g' value as a Bignum
-  # @return [OpenSSL::BN] the client 'S' value as a OpenSSL::BN
+  # @return [Bignum] the client 'S' value as a Bignum
   def calc_client_S(bb, a, k, x, u, nn, g)
     mod_pow((bb - k * mod_pow(g, x, nn)), a + u * x, nn)
   end
-  typesig :calc_client_S, [Integer, Integer, Integer, Integer, Integer, Integer, Integer] => OpenSSL::BN
+  typesig :calc_client_S, [Integer, Integer, Integer, Integer, Integer, Integer, Integer] => Bignum
 
   # Server Session Key
   # S = (A * v^u) ^ b % N
@@ -177,11 +178,11 @@ module SIRP
   # @param v [Bignum] the 'v' value as a Bignum
   # @param u [Bignum] the 'u' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @return [OpenSSL::BN] the verifier 'S' value as a Bignum
+  # @return [Bignum] the verifier 'S' value as a Bignum
   def calc_server_S(aa, b, v, u, nn)
     mod_pow(aa * mod_pow(v, u, nn), b, nn)
   end
-  typesig :calc_server_S, [Integer, Integer, Integer, Integer, Integer] => OpenSSL::BN
+  typesig :calc_server_S, [Integer, Integer, Integer, Integer, Integer] => Bignum
 
   # M = H(A, B, K)
   #
