@@ -1,7 +1,16 @@
 module SIRP
   class Client
     include SIRP
-    attr_reader :N, :g, :k, :a, :A, :S, :K, :M, :H_AMK, :hash
+    attr_reader :N       # Bignum
+    attr_reader :g       # Fixnum
+    attr_reader :k       # Bignum
+    attr_reader :a       # Bignum
+    attr_reader :A       # String (hex)
+    attr_reader :S       # String (hex)
+    attr_reader :K       # String (hex)
+    attr_reader :M       # String (hex)
+    attr_reader :H_AMK   # String (hex)
+    attr_reader :hash    # Digest::SHA1 || Digest::SHA256
 
     # Select modulus (N), generator (g), and one-way hash function (SHA1 or SHA256)
     #
