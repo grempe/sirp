@@ -36,7 +36,7 @@ module SIRP
     # @param password [String] the client provided authentication password
     # @param xsalt [String] the server provided salt for the username in hex
     # @param xbb [String] the server verifier 'B' value in hex
-    # @return [String, nil] the client 'M' value in hex, or nil if safety checks fail
+    # @return [String] the client 'M' value in hex
     def process_challenge(username, password, xsalt, xbb)
       raise ArgumentError, 'username must not be an empty string' if username.empty?
       raise ArgumentError, 'password must not be an empty string' if password.empty?
@@ -46,14 +46,12 @@ module SIRP
       # Convert the 'B' hex value to an Integer
       bb = xbb.to_i(16)
 
-      # SRP-6a safety check
-      return nil if (bb % @N).zero?
+      raise 'SRP-6a Safety Check : B % N cannot equal 0' if (bb % @N).zero?
 
       x = calc_x(username, password, xsalt)
       u = calc_u(@A, xbb, hash)
 
-      # SRP-6a safety check
-      return nil if u.zero?
+      raise 'SRP-6a Safety Check : u cannot equal 0' if u.zero?
 
       # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_client_S(bb, @a, @k, x, u, @N, @g))
@@ -68,8 +66,7 @@ module SIRP
       # Return the 'M' matcher to be sent to the server
       @M
     end
-    # FIXME : Don't return String OR nil. Figure out a way to return a single type.
-    typesig :process_challenge, [String, String, String, String] => Any
+    typesig :process_challenge, [String, String, String, String] => String
 
     #
     # Phase 2 : Step 2 : See Verifier#verify_session(proof, client_M)
