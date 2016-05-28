@@ -36,18 +36,6 @@ describe SIRP do
     end
   end
 
-  context 'sha_str' do
-    it 'should calculate expected results for SHA1' do
-      expect(sha_str('foo', Digest::SHA1))
-        .to eq '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33'
-    end
-
-    it 'should calculate expected results for SHA256' do
-      expect(sha_str('foo', Digest::SHA256))
-        .to eq '2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae'
-    end
-  end
-
   context 'secure_compare' do
     it 'should return true when string args match' do
       expect(secure_compare('foo', 'foo')).to be true

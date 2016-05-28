@@ -209,7 +209,7 @@ module SIRP
   # @return [String] the 'H_AMK' value in hex
   def calc_H_AMK(xaa, xmm, xkk, hash_klass)
     byte_string = hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
-    sha_str(byte_string, hash_klass)
+    hash_klass.hexdigest(byte_string)
   end
   typesig :calc_H_AMK, [String, String, String, :hexdigest] => String
 end
