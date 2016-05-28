@@ -5,14 +5,14 @@ module SIRP
 
     # Select modulus (N), generator (g), and one-way hash function (SHA1 or SHA256)
     #
-    # @param group [Integer] the group size in bits
+    # @param group [Fixnum] the group size in bits
     def initialize(group = 2048)
-      raise ArgumentError, 'must be an Integer' unless group.is_a?(Integer)
       raise ArgumentError, 'must be a known group size' unless [1024, 1536, 2048, 3072, 4096, 6144, 8192].include?(group)
 
       @N, @g, @hash = Ng(group)
       @k = calc_k(@N, @g, hash)
     end
+    typesig :initialize, [Fixnum] => Integer
 
     # Phase 1 : Step 1 : Start the authentication process by generating the
     # client 'a' and 'A' values. Public 'A' should later be sent along with
@@ -24,6 +24,7 @@ module SIRP
       @a ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(32)).hex
       @A = num_to_hex(calc_A(@a, @N, @g))
     end
+    typesig :start_authentication, [] => String
 
     #
     # Phase 1 : Step 2 : See Verifier#get_challenge_and_proof(username, xverifier, xsalt, xaa)
@@ -37,11 +38,9 @@ module SIRP
     # @param xbb [String] the server verifier 'B' value in hex
     # @return [String, nil] the client 'M' value in hex, or nil if safety checks fail
     def process_challenge(username, password, xsalt, xbb)
-      raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
-      raise ArgumentError, 'password must be a string' unless password.is_a?(String) && !password.empty?
-      raise ArgumentError, 'xsalt must be a string' unless xsalt.is_a?(String)
+      raise ArgumentError, 'username must not be an empty string' if username.empty?
+      raise ArgumentError, 'password must not be an empty string' if password.empty?
       raise ArgumentError, 'xsalt must be a hex string' unless xsalt =~ /^[a-fA-F0-9]+$/
-      raise ArgumentError, 'xbb must be a string' unless xbb.is_a?(String)
       raise ArgumentError, 'xbb must be a hex string' unless xbb =~ /^[a-fA-F0-9]+$/
 
       # Convert the 'B' hex value to an Integer
@@ -69,6 +68,8 @@ module SIRP
       # Return the 'M' matcher to be sent to the server
       @M
     end
+    # FIXME : Don't return String OR nil. Figure out a way to return a single type.
+    typesig :process_challenge, [String, String, String, String] => Any
 
     #
     # Phase 2 : Step 2 : See Verifier#verify_session(proof, client_M)
@@ -84,13 +85,13 @@ module SIRP
     # @param server_HAMK [String] the server provided H_AMK in hex
     # @return [true,false] returns true if the server and client agree on the H_AMK value, false if not
     def verify(server_HAMK)
-      return false unless @H_AMK && server_HAMK
-      return false unless server_HAMK.is_a?(String)
+      return false unless @H_AMK
       return false unless server_HAMK =~ /^[a-fA-F0-9]+$/
 
       # Hash the comparison params to ensure that both strings
       # being compared are equal length 32 Byte strings.
       secure_compare(Digest::SHA256.hexdigest(@H_AMK), Digest::SHA256.hexdigest(server_HAMK))
     end
+    typesig :verify, [String] => Boolean
   end
 end

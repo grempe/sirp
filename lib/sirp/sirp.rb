@@ -5,7 +5,7 @@ module SIRP
   #
   # a^b (mod m)
   #
-  # @param a [Bignum] the base value as a Bignum
+  # @param a [Fixnum, Bignum] the base value as a Fixnum or Bignum, depending on size
   # @param b [Bignum] the exponent value as a Bignum
   # @param m [Bignum] the modulus value as a Bignum
   # @return [Bignum] the solution as a Bignum
@@ -13,11 +13,15 @@ module SIRP
     # Use OpenSSL::BN#mod_exp
     a.to_bn.mod_exp(b, m)
   end
+  # Specify Integer type for 'a' as that covers both Fixnum
+  # and Bignum. Fixnum vs. Bignum :
+  #   http://miha.filej.net/ruby-numeric
+  typesig :mod_pow, [Integer, Integer, Integer] => OpenSSL::BN
 
   # Hashing function with padding.
   # Input is prefixed with 0 to meet N hex width.
-  def H(hash_klass, n, *a)
-    nlen = 2 * ((('%x' % [n]).length * 4 + 7) >> 3)
+  def H(hash_klass, nn, *a)
+    nlen = 2 * ((('%x' % [nn]).length * 4 + 7) >> 3)
 
     hashin = a.map do |s|
       next unless s
@@ -28,8 +32,10 @@ module SIRP
       '0' * (nlen - shex.length) + shex
     end.join('')
 
-    sha_hex(hashin, hash_klass).hex % n
+    sha_hex(hashin, hash_klass).hex % nn
   end
+  # FIXME : Can't specify Any for a *a arg
+  # typesig :H, [:hexdigest, Integer, Any] => Bignum
 
   # Multiplier Parameter
   # k = H(N, g) (in SRP-6a)
@@ -41,6 +47,7 @@ module SIRP
   def calc_k(nn, g, hash_klass)
     H(hash_klass, nn, nn, g)
   end
+  typesig :calc_k, [Integer, Integer, :hexdigest] => Integer
 
   # Private Key (derived from username, password and salt)
   #
@@ -93,6 +100,7 @@ module SIRP
     x_hex = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), 'srp-x-2', int_key + username)
     x_hex.hex
   end
+  typesig :calc_x, [String, String, String] => Integer
 
   # Random Scrambling Parameter
   # u = H(A, B)
@@ -105,6 +113,7 @@ module SIRP
   def calc_u(xaa, xbb, nn, hash_klass)
     H(hash_klass, nn, xaa, xbb)
   end
+  typesig :calc_u, [String, String, Integer, :hexdigest] => Integer
 
   # Password Verifier
   # v = g^x (mod N)
@@ -112,10 +121,11 @@ module SIRP
   # @param x [Bignum] the 'x' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
   # @param g [Bignum] the 'g' value as a Bignum
-  # @return [Bignum] the client 'v' value as a Bignum
+  # @return [OpenSSL::BN] the client 'v' value as a Bignum
   def calc_v(x, nn, g)
     mod_pow(g, x, nn)
   end
+  typesig :calc_v, [Integer, Integer, Integer] => OpenSSL::BN
 
   # Client Ephemeral Value
   # A = g^a (mod N)
@@ -123,10 +133,11 @@ module SIRP
   # @param a [Bignum] the 'a' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
   # @param g [Bignum] the 'g' value as a Bignum
-  # @return [Bignum] the client ephemeral 'A' value as a Bignum
+  # @return [OpenSSL::BN] the client ephemeral 'A' value as a Bignum
   def calc_A(a, nn, g)
     mod_pow(g, a, nn)
   end
+  typesig :calc_A, [Integer, Integer, Integer] => OpenSSL::BN
 
   # Server Ephemeral Value
   # B = kv + g^b % N
@@ -140,6 +151,7 @@ module SIRP
   def calc_B(b, k, v, nn, g)
     (k * v + mod_pow(g, b, nn)) % nn
   end
+  typesig :calc_B, [Integer, Integer, Integer, Integer, Integer] => Integer
 
   # Client Session Key
   # S = (B - (k * g^x)) ^ (a + (u * x)) % N
@@ -151,10 +163,11 @@ module SIRP
   # @param u [Bignum] the 'u' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
   # @param g [Bignum] the 'g' value as a Bignum
-  # @return [Bignum] the client 'S' value as a Bignum
+  # @return [OpenSSL::BN] the client 'S' value as a OpenSSL::BN
   def calc_client_S(bb, a, k, x, u, nn, g)
     mod_pow((bb - k * mod_pow(g, x, nn)), a + u * x, nn)
   end
+  typesig :calc_client_S, [Integer, Integer, Integer, Integer, Integer, Integer, Integer] => OpenSSL::BN
 
   # Server Session Key
   # S = (A * v^u) ^ b % N
@@ -164,10 +177,11 @@ module SIRP
   # @param v [Bignum] the 'v' value as a Bignum
   # @param u [Bignum] the 'u' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @return [Bignum] the verifier 'S' value as a Bignum
+  # @return [OpenSSL::BN] the verifier 'S' value as a Bignum
   def calc_server_S(aa, b, v, u, nn)
     mod_pow(aa * mod_pow(v, u, nn), b, nn)
   end
+  typesig :calc_server_S, [Integer, Integer, Integer, Integer, Integer] => OpenSSL::BN
 
   # M = H(A, B, K)
   #
@@ -183,6 +197,7 @@ module SIRP
     digester << hex_to_bytes(xkk).pack('C*')
     digester.hexdigest
   end
+  typesig :calc_M, [String, String, String, :hexdigest] => String
 
   # H(A, M, K)
   #
@@ -195,4 +210,5 @@ module SIRP
     byte_string = hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
     sha_str(byte_string, hash_klass)
   end
+  typesig :calc_H_AMK, [String, String, String, :hexdigest] => String
 end
