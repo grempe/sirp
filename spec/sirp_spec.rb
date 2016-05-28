@@ -124,7 +124,8 @@ describe SIRP do
       xaa = 'b1c4827b0ce416953789db123051ed990023f43b396236b86e12a2c69638fb8e'
       xbb = 'fbc56086bb51e26ee1a8287c0a7f3fd4e067e55beb8530b869b10b961957ff68'
       xss = 'a606c182e364d2c15f9cdbeeeb63bb00c831d1da65eedc1414f21157d0312a5a'
-      xkk = sha_hex(xss, Digest::SHA1)
+      xkk = Digest::SHA1.hexdigest([xss].pack('H*'))
+
       expect(xkk).to eq '5844898ea6e5f5d9b737bc0ba2fb9d5edd3f8e67'
       mm = calc_M(xaa, xbb, xkk, Digest::SHA1)
       expect(mm).to eq '0c6de5c7892a71bf971d733a511c44940e227941'

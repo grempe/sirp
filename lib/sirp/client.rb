@@ -57,7 +57,7 @@ module SIRP
 
       # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_client_S(bb, @a, @k, x, u, @N, @g))
-      @K = sha_hex(@S, hash)
+      @K = hash.hexdigest([@S].pack('H*'))
 
       # Calculate the 'M' matcher
       @M = calc_M(@A, xbb, @K, hash)
