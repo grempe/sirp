@@ -5,14 +5,14 @@ module SIRP
 
     # Select modulus (N), generator (g), and one-way hash function (SHA1 or SHA256)
     #
-    # @param group [Integer] the group size in bits
+    # @param group [Fixnum] the group size in bits
     def initialize(group = 2048)
-      raise ArgumentError, 'must be an Integer' unless group.is_a?(Integer)
       raise ArgumentError, 'must be a known group size' unless [1024, 1536, 2048, 3072, 4096, 6144, 8192].include?(group)
 
       @N, @g, @hash = Ng(group)
       @k = calc_k(@N, @g, hash)
     end
+    typesig :initialize, [Fixnum] => Integer
 
     # Phase 0 ; Generate a verifier and salt client-side. This should only be
     # used during the initial user registration process. All three values
@@ -26,14 +26,15 @@ module SIRP
     # @param password [String] the authentication password
     # @return [Hash] a Hash of the username, verifier, and salt
     def generate_userauth(username, password)
-      raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
-      raise ArgumentError, 'password must be a string' unless password.is_a?(String) && !password.empty?
+      raise ArgumentError, 'username must not be an emoty string' if username.empty?
+      raise ArgumentError, 'password must not be an emoty string' if password.empty?
 
       @salt ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(16))
       x = calc_x(username, password, @salt)
       v = calc_v(x, @N, @g)
       { username: username, verifier: num_to_hex(v), salt: @salt }
     end
+    typesig :generate_userauth, [String, String] => Hash
 
     # Phase 1 : Step 2 : Create a challenge for the client, and a proof to be stored
     # on the server for later use when verifying the client response.
@@ -44,12 +45,9 @@ module SIRP
     # @param xaa [String] the client provided 'A' value in hex
     # @return [Hash] a Hash with the challenge for the client and a proof for the server
     def get_challenge_and_proof(username, xverifier, xsalt, xaa)
-      raise ArgumentError, 'username must be a string' unless username.is_a?(String) && !username.empty?
-      raise ArgumentError, 'xverifier must be a string' unless xverifier.is_a?(String)
+      raise ArgumentError, 'username must not be an empty string' if username.empty?
       raise ArgumentError, 'xverifier must be a hex string' unless xverifier =~ /^[a-fA-F0-9]+$/
-      raise ArgumentError, 'xsalt must be a string' unless xsalt.is_a?(String)
       raise ArgumentError, 'xsalt must be a hex string' unless xsalt =~ /^[a-fA-F0-9]+$/
-      raise ArgumentError, 'xaa must be a string' unless xaa.is_a?(String)
       raise ArgumentError, 'xaa must be a hex string' unless xaa =~ /^[a-fA-F0-9]+$/
 
       # SRP-6a safety check
@@ -65,6 +63,7 @@ module SIRP
         proof: { A: xaa, B: @B, b: num_to_hex(@b), I: username, s: xsalt, v: xverifier }
       }
     end
+    typesig :get_challenge_and_proof, [String, String, String, String] => Any
 
     #
     # Phase 2 : Step 1 : See Client#start_authentication
@@ -89,7 +88,6 @@ module SIRP
       # gracefully handle string or symbol keys
       Hashie.symbolize_keys!(proof)
       raise ArgumentError, 'proof must have required hash keys' unless proof.keys == [:A, :B, :b, :I, :s, :v]
-      raise ArgumentError, 'client_M must be a string' unless client_M.is_a?(String)
       raise ArgumentError, 'client_M must be a hex string' unless client_M =~ /^[a-fA-F0-9]+$/
 
       @A = proof[:A]
@@ -119,5 +117,6 @@ module SIRP
         nil
       end
     end
+    typesig :verify_session, [Hash, String] => Any
   end
 end

@@ -7,6 +7,7 @@ module SIRP
   def hex_to_bytes(str)
     [str].pack('H*').unpack('C*')
   end
+  typesig :hex_to_bytes, [String] => Array
 
   # Convert a number to a downcased hex string, prepending '0' to the
   # hex string if the hex conversion resulted in an odd length string.
@@ -18,6 +19,9 @@ module SIRP
     even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
     even_hex_str.downcase
   end
+  # FIXME : normalize the type of the input for num, now it receives
+  # Fixnum, Bignum, and OpenSSL::BN depending on who is calling.
+  typesig :num_to_hex, [Any] => String
 
   # Applies a one-way hash function, either SHA1 or SHA256, on an
   # unpacked hex string. It will generate the same
@@ -38,6 +42,7 @@ module SIRP
   def sha_hex(h, hash_klass)
     hash_klass.hexdigest([h].pack('H*'))
   end
+  typesig :sha_hex, [String, :hexdigest] => String
 
   # Applies a one-way hash function, either SHA1 or SHA256, on the string provided.
   #
@@ -47,6 +52,7 @@ module SIRP
   def sha_str(s, hash_klass)
     hash_klass.hexdigest(s)
   end
+  typesig :sha_str, [String, :hexdigest] => String
 
   # Constant time string comparison.
   # Extracted from Rack::Utils
@@ -70,4 +76,5 @@ module SIRP
     b.each_byte { |v| r |= v ^ l[i+=1] }
     r == 0
   end
+  typesig :secure_compare, [String, String] => Boolean
 end

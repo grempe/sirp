@@ -65,9 +65,6 @@ describe SIRP do
       proof = { A: aa, B: cp[:proof][:B], b: cp[:proof][:b], I: @username, s: salt, v: v }
       server_H_AMK = verifier.verify_session(proof, client_M)
       expect(server_H_AMK).to be nil
-
-      # phase 2 (client)
-      expect(client.verify(server_H_AMK)).to be false
     end
 
     it 'should authenticate when simulating a stateless server' do

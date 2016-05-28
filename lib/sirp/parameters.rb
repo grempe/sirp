@@ -168,4 +168,5 @@ module SIRP
 
     [@N, @g, @hash]
   end
+  typesig :Ng, [Fixnum] => Array
 end
