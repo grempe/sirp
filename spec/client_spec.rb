@@ -45,8 +45,8 @@ describe SIRP do
       mm = client.process_challenge(@username, @password, @salt, bb)
 
       # Client keys
-      expect(client.S).to eq '7c495331341aa0d0b3fc67d2c7a03451c2a8842cd9d87a1d36cc70883f8bd54b9269caa722f675677bd9256865f3e4409ec676a03cbc344ed3acbc0d94177b3545800194a136bbbdc826f188810eed7bf547125d768808e5bad59c92be8f29eabe425925ae2339191d63ee7cc9f0c7406af62d907471f7cd3dd7ac2af085fcfb'
-      expect(client.K).to eq 'f99b03fae337287428db69a7be8e33d09ce164cc'
+      expect(client.S).to eq '794b01409a24daa0157f516d500cd780fc1bcdaf08ee09392ff22fad43c433caaf2711c50a1f5fada0fd1ae5ce76468e30a0eb4128340fde5ba0d08a54d7c15b0d60c0ba0524e127222004902293a55fae5784063e7aed162013c336e44a817d631b2b6446b40e4af0da2374b6b86dcf84fbba7824f8dfb08eac5f2b7cd1e10f'
+      expect(client.K).to eq '9bf397a36adb2b5cd65f0a5433ebd96dd6f723fb'
     end
 
     it 'should verify true with matching server H_AMK' do

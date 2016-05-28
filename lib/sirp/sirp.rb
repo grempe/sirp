@@ -19,24 +19,23 @@ module SIRP
   #   http://miha.filej.net/ruby-numeric
   typesig :mod_pow, [Integer, Integer, Integer] => Bignum
 
-  # Hashing function with padding.
-  # Input is prefixed with 0 to meet N hex width.
-  def H(hash_klass, nn, *a)
-    nlen = 2 * ((('%x' % [nn]).length * 4 + 7) >> 3)
+  # One-Way Hash Function
+  #
+  # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
+  # @param a [Array] the Array of values to be hashed together
+  # @return [Bignum] the hexdigest as a Bignum
+  def H(hash_klass, a)
+    hasher = hash_klass.new
 
-    hashin = a.map do |s|
-      next unless s
-      shex = s.is_a?(String) ? s : num_to_hex(s)
-      if shex.length > nlen
-        raise 'Bit width does not match - client uses different prime'
-      end
-      '0' * (nlen - shex.length) + shex
-    end.join('')
+    a.compact.map do |v|
+      xv = v.is_a?(String) ? v : num_to_hex(v)
+      hasher.update [xv].pack('H*')
+    end
 
-    hash_klass.hexdigest([hashin].pack('H*')).hex
+    digest = hasher.hexdigest
+    digest.hex
   end
-  # FIXME : Can't specify Any for a *a arg
-  # typesig :H, [:hexdigest, Integer, Any] => Bignum
+  typesig :H, [:hexdigest, Array] => Bignum
 
   # Multiplier Parameter
   # k = H(N, g) (in SRP-6a)
@@ -46,9 +45,9 @@ module SIRP
   # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
   # @return [Bignum] the 'k' value as a Bignum
   def calc_k(nn, g, hash_klass)
-    H(hash_klass, nn, nn, g)
+    H(hash_klass, [nn, g])
   end
-  typesig :calc_k, [Integer, Integer, :hexdigest] => Integer
+  typesig :calc_k, [Integer, Integer, :hexdigest] => Bignum
 
   # Private Key (derived from username, password and salt)
   #
@@ -108,13 +107,12 @@ module SIRP
   #
   # @param xaa [String] the 'A' value in hex
   # @param xbb [String] the 'B' value in hex
-  # @param nn [Bignum] the 'N' value as a Bignum
   # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
   # @return [Bignum] the 'u' value as a Bignum
-  def calc_u(xaa, xbb, nn, hash_klass)
-    H(hash_klass, nn, xaa, xbb)
+  def calc_u(xaa, xbb, hash_klass)
+    H(hash_klass, [xaa, xbb])
   end
-  typesig :calc_u, [String, String, Integer, :hexdigest] => Integer
+  typesig :calc_u, [String, String, :hexdigest] => Integer
 
   # Password Verifier
   # v = g^x (mod N)
