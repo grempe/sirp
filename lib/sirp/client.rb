@@ -1,6 +1,7 @@
 module SIRP
   class Client
     include SIRP
+
     attr_reader :N       # Bignum
     attr_reader :g       # Fixnum
     attr_reader :k       # Bignum
