@@ -1,4 +1,7 @@
 module SIRP
+  include Contracts::Core
+  include Contracts::Builtin
+
   # Modular Exponentiation
   # https://en.m.wikipedia.org/wiki/Modular_exponentiation
   # http://rosettacode.org/wiki/Modular_exponentiation#Ruby
@@ -9,18 +12,19 @@ module SIRP
   # @param b [Bignum] the exponent value as a Bignum
   # @param m [Bignum] the modulus value as a Bignum
   # @return [Bignum] the solution as a Bignum
+  Contract Or[Fixnum, Bignum], Nat, Nat => Bignum
   def mod_pow(a, b, m)
     # Convert type and use OpenSSL::BN#mod_exp to do the calculation
     # Convert back to a Bignum so OpenSSL::BN doesn't leak everywhere
     a.to_bn.mod_exp(b, m).to_i
   end
-  typesig :mod_pow, [Integer, Integer, Integer] => Bignum
 
   # One-Way Hash Function
   #
   # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
   # @param a [Array] the Array of values to be hashed together
   # @return [Bignum] the hexdigest as a Bignum
+  Contract RespondTo[:hexdigest], ArrayOf[Or[String, Nat]] => Bignum
   def H(hash_klass, a)
     hasher = hash_klass.new
 
@@ -32,19 +36,18 @@ module SIRP
     digest = hasher.hexdigest
     digest.hex
   end
-  typesig :H, [:hexdigest, Array] => Bignum
 
   # Multiplier Parameter
   # k = H(N, g) (in SRP-6a)
   #
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @param g [Bignum] the 'g' value as a Bignum
+  # @param g [Fixnum] the 'g' value as a Fixnum
   # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
   # @return [Bignum] the 'k' value as a Bignum
+  Contract Bignum, Nat, RespondTo[:hexdigest] => Bignum
   def calc_k(nn, g, hash_klass)
     H(hash_klass, [nn, g])
   end
-  typesig :calc_k, [Integer, Integer, :hexdigest] => Bignum
 
   # Private Key (derived from username, password and salt)
   #
@@ -91,13 +94,13 @@ module SIRP
   # @param password [String] the 'password' (p) as a String
   # @param salt [String] the 'salt' in hex
   # @return [Bignum] the Scrypt+HMAC stretched 'x' value as a Bignum
+  Contract String, String, String => Bignum
   def calc_x(username, password, salt)
     prehash_pw = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), 'srp-x-1', password)
     int_key = RbNaCl::PasswordHash.scrypt(prehash_pw, salt.force_encoding('BINARY'), 2**19, 2**24, 32)
     x_hex = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), 'srp-x-2', int_key + username)
     x_hex.hex
   end
-  typesig :calc_x, [String, String, String] => Integer
 
   # Random Scrambling Parameter
   # u = H(A, B)
@@ -106,34 +109,34 @@ module SIRP
   # @param xbb [String] the 'B' value in hex
   # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
   # @return [Bignum] the 'u' value as a Bignum
+  Contract String, String, RespondTo[:hexdigest] => Bignum
   def calc_u(xaa, xbb, hash_klass)
     H(hash_klass, [xaa, xbb])
   end
-  typesig :calc_u, [String, String, :hexdigest] => Integer
 
   # Password Verifier
   # v = g^x (mod N)
   #
   # @param x [Bignum] the 'x' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @param g [Bignum] the 'g' value as a Bignum
+  # @param g [Fixnum] the 'g' value as a Fixnum
   # @return [Bignum] the client 'v' value as a Bignum
+  Contract Bignum, Bignum, Fixnum => Bignum
   def calc_v(x, nn, g)
     mod_pow(g, x, nn)
   end
-  typesig :calc_v, [Integer, Integer, Integer] => Bignum
 
   # Client Ephemeral Value
   # A = g^a (mod N)
   #
   # @param a [Bignum] the 'a' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @param g [Bignum] the 'g' value as a Bignum
+  # @param g [Fixnum] the 'g' value as a Fixnum
   # @return [Bignum] the client ephemeral 'A' value as a Bignum
+  Contract Bignum, Bignum, Fixnum => Bignum
   def calc_A(a, nn, g)
     mod_pow(g, a, nn)
   end
-  typesig :calc_A, [Integer, Integer, Integer] => Bignum
 
   # Server Ephemeral Value
   # B = kv + g^b % N
@@ -142,12 +145,12 @@ module SIRP
   # @param k [Bignum] the 'k' value as a Bignum
   # @param v [Bignum] the 'v' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @param g [Bignum] the 'g' value as a Bignum
+  # @param g [Fixnum] the 'g' value as a Fixnum
   # @return [Bignum] the verifier ephemeral 'B' value as a Bignum
+  Contract Bignum, Bignum, Bignum, Bignum, Fixnum => Bignum
   def calc_B(b, k, v, nn, g)
     (k * v + mod_pow(g, b, nn)) % nn
   end
-  typesig :calc_B, [Integer, Integer, Integer, Integer, Integer] => Bignum
 
   # Client Session Key
   # S = (B - (k * g^x)) ^ (a + (u * x)) % N
@@ -158,12 +161,12 @@ module SIRP
   # @param x [Bignum] the 'x' value as a Bignum
   # @param u [Bignum] the 'u' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
-  # @param g [Bignum] the 'g' value as a Bignum
+  # @param g [Fixnum] the 'g' value as a Fixnum
   # @return [Bignum] the client 'S' value as a Bignum
+  Contract Bignum, Bignum, Bignum, Bignum, Bignum, Bignum, Fixnum => Bignum
   def calc_client_S(bb, a, k, x, u, nn, g)
     mod_pow((bb - k * mod_pow(g, x, nn)), a + u * x, nn)
   end
-  typesig :calc_client_S, [Integer, Integer, Integer, Integer, Integer, Integer, Integer] => Bignum
 
   # Server Session Key
   # S = (A * v^u) ^ b % N
@@ -174,10 +177,10 @@ module SIRP
   # @param u [Bignum] the 'u' value as a Bignum
   # @param nn [Bignum] the 'N' value as a Bignum
   # @return [Bignum] the verifier 'S' value as a Bignum
+  Contract Bignum, Bignum, Bignum, Bignum, Bignum => Bignum
   def calc_server_S(aa, b, v, u, nn)
     mod_pow(aa * mod_pow(v, u, nn), b, nn)
   end
-  typesig :calc_server_S, [Integer, Integer, Integer, Integer, Integer] => Bignum
 
   # M = H(A, B, K)
   #
@@ -186,6 +189,7 @@ module SIRP
   # @param xkk [String] the 'K' value in hex
   # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
   # @return [String] the 'M' value in hex
+  Contract String, String, String, RespondTo[:hexdigest] => String
   def calc_M(xaa, xbb, xkk, hash_klass)
     digester = hash_klass.new
     digester << hex_to_bytes(xaa).pack('C*')
@@ -193,7 +197,6 @@ module SIRP
     digester << hex_to_bytes(xkk).pack('C*')
     digester.hexdigest
   end
-  typesig :calc_M, [String, String, String, :hexdigest] => String
 
   # H(A, M, K)
   #
@@ -202,9 +205,9 @@ module SIRP
   # @param xkk [String] the 'K' value in hex
   # @param hash_klass [Digest::SHA1, Digest::SHA256] The hash class that responds to hexdigest
   # @return [String] the 'H_AMK' value in hex
+  Contract String, String, String, RespondTo[:hexdigest] => String
   def calc_H_AMK(xaa, xmm, xkk, hash_klass)
     byte_string = hex_to_bytes([xaa, xmm, xkk].join('')).pack('C*')
     hash_klass.hexdigest(byte_string)
   end
-  typesig :calc_H_AMK, [String, String, String, :hexdigest] => String
 end

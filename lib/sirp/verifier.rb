@@ -1,5 +1,7 @@
 module SIRP
   class Verifier
+    include Contracts::Core
+    include Contracts::Builtin
     include SIRP
 
     attr_reader :N       # Bignum
@@ -17,13 +19,13 @@ module SIRP
     # Select modulus (N), generator (g), and one-way hash function (SHA1 or SHA256)
     #
     # @param group [Fixnum] the group size in bits
+    Contract Nat => Nat
     def initialize(group = 2048)
       raise ArgumentError, 'must be a known group size' unless [1024, 1536, 2048, 3072, 4096, 6144, 8192].include?(group)
 
       @N, @g, @hash = Ng(group)
       @k = calc_k(@N, @g, hash)
     end
-    typesig :initialize, [Fixnum] => Integer
 
     # Phase 0 ; Generate a verifier and salt client-side. This should only be
     # used during the initial user registration process. All three values
@@ -36,6 +38,7 @@ module SIRP
     # @param username [String] the authentication username
     # @param password [String] the authentication password
     # @return [Hash] a Hash of the username, verifier, and salt
+    Contract String, String => { username: String, verifier: String, salt: String }
     def generate_userauth(username, password)
       raise ArgumentError, 'username must not be an emoty string' if username.empty?
       raise ArgumentError, 'password must not be an emoty string' if password.empty?
@@ -45,7 +48,6 @@ module SIRP
       v = calc_v(x, @N, @g)
       { username: username, verifier: num_to_hex(v), salt: @salt }
     end
-    typesig :generate_userauth, [String, String] => Hash
 
     # Phase 1 : Step 2 : Create a challenge for the client, and a proof to be stored
     # on the server for later use when verifying the client response.
@@ -55,6 +57,8 @@ module SIRP
     # @param xsalt [String] the server stored salt for the username in hex
     # @param xaa [String] the client provided 'A' value in hex
     # @return [Hash] a Hash with the challenge for the client and a proof for the server
+    Contract String, String, String, String => { challenge: { B: String, salt: String },
+      proof: { A: String, B: String, b: String, I: String, s: String, v: String } }
     def get_challenge_and_proof(username, xverifier, xsalt, xaa)
       raise ArgumentError, 'username must not be an empty string' if username.empty?
       raise ArgumentError, 'xverifier must be a hex string' unless xverifier =~ /^[a-fA-F0-9]+$/
@@ -73,7 +77,6 @@ module SIRP
         proof: { A: xaa, B: @B, b: num_to_hex(@b), I: username, s: xsalt, v: xverifier }
       }
     end
-    typesig :get_challenge_and_proof, [String, String, String, String] => Hash
 
     #
     # Phase 2 : Step 1 : See Client#start_authentication
@@ -93,6 +96,7 @@ module SIRP
     # @param proof [Hash] the server stored proof Hash with keys A, B, b, I, s, v
     # @param client_M [String] the client provided 'M' value in hex
     # @return [String] the H_AMK value in hex for the client, or empty string if verification failed
+    Contract ({A: String, B: String, b: String, I: String, s: String, v: String}), String => String
     def verify_session(proof, client_M)
       raise ArgumentError, 'proof must be a hash' unless proof.is_a?(Hash)
       # gracefully handle string or symbol keys
@@ -124,6 +128,5 @@ module SIRP
         ''
       end
     end
-    typesig :verify_session, [Hash, String] => String
   end
 end

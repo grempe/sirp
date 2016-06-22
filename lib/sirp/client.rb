@@ -1,5 +1,7 @@
 module SIRP
   class Client
+    include Contracts::Core
+    include Contracts::Builtin
     include SIRP
 
     attr_reader :N       # Bignum
@@ -16,13 +18,13 @@ module SIRP
     # Select modulus (N), generator (g), and one-way hash function (SHA1 or SHA256)
     #
     # @param group [Fixnum] the group size in bits
+    Contract Nat => Nat
     def initialize(group = 2048)
       raise ArgumentError, 'must be a known group size' unless [1024, 1536, 2048, 3072, 4096, 6144, 8192].include?(group)
 
       @N, @g, @hash = Ng(group)
       @k = calc_k(@N, @g, hash)
     end
-    typesig :initialize, [Fixnum] => Integer
 
     # Phase 1 : Step 1 : Start the authentication process by generating the
     # client 'a' and 'A' values. Public 'A' should later be sent along with
@@ -30,11 +32,11 @@ module SIRP
     # internal secret 'a' value should remain private.
     #
     # @return [String] the value of 'A' in hex
+    Contract None => String
     def start_authentication
       @a ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(32)).hex
       @A = num_to_hex(calc_A(@a, @N, @g))
     end
-    typesig :start_authentication, [] => String
 
     #
     # Phase 1 : Step 2 : See Verifier#get_challenge_and_proof(username, xverifier, xsalt, xaa)
@@ -47,6 +49,7 @@ module SIRP
     # @param xsalt [String] the server provided salt for the username in hex
     # @param xbb [String] the server verifier 'B' value in hex
     # @return [String] the client 'M' value in hex
+    Contract String, String, String, String => String
     def process_challenge(username, password, xsalt, xbb)
       raise ArgumentError, 'username must not be an empty string' if username.empty?
       raise ArgumentError, 'password must not be an empty string' if password.empty?
@@ -76,7 +79,6 @@ module SIRP
       # Return the 'M' matcher to be sent to the server
       @M
     end
-    typesig :process_challenge, [String, String, String, String] => String
 
     #
     # Phase 2 : Step 2 : See Verifier#verify_session(proof, client_M)
@@ -91,11 +93,11 @@ module SIRP
     #
     # @param server_HAMK [String] the server provided H_AMK in hex
     # @return [true,false] returns true if the server and client agree on the H_AMK value, false if not
+    Contract String => Bool
     def verify(server_HAMK)
       return false unless @H_AMK
       return false unless server_HAMK =~ /^[a-fA-F0-9]+$/
       secure_compare(@H_AMK, server_HAMK)
     end
-    typesig :verify, [String] => Boolean
   end
 end

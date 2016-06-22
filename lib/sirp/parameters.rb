@@ -1,4 +1,8 @@
 module SIRP
+  include Contracts::Core
+  include Contracts::Builtin
+
+  Contract Num => Array[Nat, Nat, RespondTo[:hexdigest]]
   def Ng(group)
     case group
     when 1024
@@ -168,5 +172,4 @@ module SIRP
 
     [@N, @g, @hash]
   end
-  typesig :Ng, [Fixnum] => Array
 end

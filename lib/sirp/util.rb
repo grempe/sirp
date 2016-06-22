@@ -1,25 +1,28 @@
 module SIRP
+  include Contracts::Core
+  include Contracts::Builtin
+
   # Convert a hex string to an a array of Integer bytes by first converting
   # the String to hex, and then converting that hex to an Array of Integer bytes.
   #
   # @param str [String] a string to convert
   # @return [Array<Integer>] an Array of Integer bytes
+  Contract String => ArrayOf[Nat]
   def hex_to_bytes(str)
     [str].pack('H*').unpack('C*')
   end
-  typesig :hex_to_bytes, [String] => Array
 
   # Convert a number to a downcased hex string, prepending '0' to the
   # hex string if the hex conversion resulted in an odd length string.
   #
   # @param num [Integer] a number to convert to a hex string
   # @return [String] a hex string
+  Contract Nat => String
   def num_to_hex(num)
     hex_str = num.to_s(16)
     even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
     even_hex_str.downcase
   end
-  typesig :num_to_hex, [Integer] => String
 
   # Constant time string comparison.
   # Extracted from Rack::Utils
@@ -34,6 +37,7 @@ module SIRP
   # @param a [String] the private value
   # @param b [String] the user provided value
   # @return [true, false] whether the strings match or not
+  Contract String, String => Bool
   def secure_compare(a, b)
     # Do all comparisons on equal length hashes of the inputs
     a = Digest::SHA256.hexdigest(a)
@@ -47,5 +51,4 @@ module SIRP
     b.each_byte { |v| r |= v ^ l[i+=1] }
     r == 0
   end
-  typesig :secure_compare, [String, String] => Boolean
 end
