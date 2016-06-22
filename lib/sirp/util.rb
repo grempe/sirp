@@ -40,10 +40,10 @@ module SIRP
     b = Digest::SHA256.hexdigest(b)
     return false unless a.bytesize == b.bytesize
 
-
     l = a.unpack('C*')
 
-    r, i = 0, -1
+    r = 0
+    i = -1
     b.each_byte { |v| r |= v ^ l[i+=1] }
     r == 0
   end
