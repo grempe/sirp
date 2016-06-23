@@ -65,7 +65,7 @@ module SIRP
       raise ArgumentError, 'xsalt must be a hex string' unless xsalt =~ /^[a-fA-F0-9]+$/
       raise ArgumentError, 'xaa must be a hex string' unless xaa =~ /^[a-fA-F0-9]+$/
 
-      raise 'SRP-6a Safety Check : A.to_i(16) % N cannot equal 0' if (xaa.to_i(16) % @N).zero?
+      fail SafetyCheckError, 'A.to_i(16) % N cannot equal 0' if (xaa.to_i(16) % @N).zero?
 
       # Generate b and B
       v = xverifier.to_i(16)
@@ -108,7 +108,7 @@ module SIRP
 
       u = calc_u(@A, @B, hash)
 
-      raise 'SRP-6a Safety Check : u cannot equal 0' if u.zero?
+      fail SafetyCheckError, 'u cannot equal 0' if u.zero?
 
       # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_server_S(@A.to_i(16), @b, v, u, @N))

@@ -59,12 +59,12 @@ module SIRP
       # Convert the 'B' hex value to an Integer
       bb = xbb.to_i(16)
 
-      raise 'SRP-6a Safety Check : B % N cannot equal 0' if (bb % @N).zero?
+      fail SafetyCheckError, 'B % N cannot equal 0' if (bb % @N).zero?
 
       x = calc_x(username, password, xsalt)
       u = calc_u(@A, xbb, hash)
 
-      raise 'SRP-6a Safety Check : u cannot equal 0' if u.zero?
+      fail SafetyCheckError, 'u cannot equal 0' if u.zero?
 
       # Calculate session key 'S' and secret key 'K'
       @S = num_to_hex(calc_client_S(bb, @a, @k, x, u, @N, @g))
