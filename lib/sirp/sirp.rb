@@ -2,6 +2,8 @@ module SIRP
   include Contracts::Core
   include Contracts::Builtin
 
+  SafetyCheckError = Class.new(StandardError)
+
   # Modular Exponentiation
   # https://en.m.wikipedia.org/wiki/Modular_exponentiation
   # http://rosettacode.org/wiki/Modular_exponentiation#Ruby

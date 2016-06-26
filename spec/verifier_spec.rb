@@ -57,7 +57,7 @@ describe SIRP do
       @auth = verifier.generate_userauth('foo', 'bar')
       nn = verifier.N
       verifier.set_aa(nn.to_s(16))
-      expect { verifier.get_challenge_and_proof(@username, @auth[:verifier], @auth[:salt], verifier.A) }.to raise_error(RuntimeError, 'SRP-6a Safety Check : A.to_i(16) % N cannot equal 0')
+      expect { verifier.get_challenge_and_proof(@username, @auth[:verifier], @auth[:salt], verifier.A) }.to raise_error(SIRP::SafetyCheckError, 'A.to_i(16) % N cannot equal 0')
     end
 
     it 'should return expected results' do
