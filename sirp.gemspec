@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
 
   # See : https://bugs.ruby-lang.org/issues/9569
   spec.add_runtime_dependency 'rbnacl-libsodium', '~> 1.0'
-  spec.add_runtime_dependency 'securer_randomer', '~> 0.1.0'
+  spec.add_runtime_dependency 'sysrandom', '~> 1.0'
 
   spec.add_development_dependency 'bundler', '~> 1.12'
   spec.add_development_dependency 'rake', '~> 11.0'

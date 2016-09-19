@@ -9,3 +9,5 @@
 /tmp/
 /examples/.bundle/
 /examples/Gemfile.lock
+.DS_Store
+
