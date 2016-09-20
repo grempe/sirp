@@ -86,6 +86,8 @@ module SIRP
     # @return [String, false] the H_AMK value in hex for the client, or false if verification failed
     def verify_session(proof, client_M)
       raise ArgumentError, 'proof must be a hash' unless proof.is_a?(Hash)
+      # gracefully handle string or symbol keys
+      Hashie.symbolize_keys!(proof)
       raise ArgumentError, 'proof must have required hash keys' unless proof.keys == [:A, :B, :b, :I, :s, :v]
       raise ArgumentError, 'client_M must be a string' unless client_M.is_a?(String)
       raise ArgumentError, 'client_M must be a hex string' unless client_M =~ /^[a-fA-F0-9]+$/
