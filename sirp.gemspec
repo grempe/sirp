@@ -39,8 +39,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'sysrandom', '~> 1.0'
   spec.add_runtime_dependency 'hashie', '~> 3.4'
 
-  spec.add_development_dependency 'bundler', '~> 1.12'
-  spec.add_development_dependency 'rake', '~> 11.0'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_development_dependency 'pry', '~> 0.10'
   spec.add_development_dependency 'coveralls', '~> 0.8'
