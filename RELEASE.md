@@ -45,7 +45,7 @@ Install locally w/ Cert:
 ```sh
 $ gem uninstall sirp
 $ rbenv rehash
-$ gem install pkg/tss-x.x.x.gem -P MediumSecurity
+$ gem install pkg/sirp-2.0.0.gem -P MediumSecurity
 Successfully installed sirp-x.x.x
 1 gem installed
 ```
@@ -53,7 +53,7 @@ Successfully installed sirp-x.x.x
 ## Git Commit Version and CHANGELOG Changes, Tag and push to Github
 
 ```sh
-$ git add lib/tss/version.rb
+$ git add lib/sirp/version.rb
 $ git add CHANGELOG.md
 $ git commit -m 'Bump version v2.0.0'
 $ git tag -s v2.0.0 -m "v2.0.0" SHA1_OF_COMMIT
