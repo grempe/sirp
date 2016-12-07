@@ -1,23 +1,38 @@
 module SIRP
-  include Contracts::Core
-  include Contracts::Builtin
+  class Prime
+    @primes = {}
 
-  Contract Num => Array[Nat, Nat, RespondTo[:hexdigest]]
-  def Ng(group)
-    case group
-    when 1024
-      @N = %w(
+    def self.[](prime_length)
+      @primes[prime_length] or raise(ArgumentError, 'must be a known group size')
+    end
+
+    attr_reader :prime_length, :N, :g
+
+  private
+
+    def initialize(prime_length, g, nn)
+      @prime_length = prime_length
+      @g = g
+      @N = nn.join.hex
+      freeze
+    end
+    
+    @primes[1024] = self.new(
+      1024,
+      2,
+      %w(
         EEAF0AB9 ADB38DD6 9C33F80A FA8FC5E8 60726187 75FF3C0B 9EA2314C
         9C256576 D674DF74 96EA81D3 383B4813 D692C6E0 E0D5D8E2 50B98BE4
         8E495C1D 6089DAD1 5DC7D7B4 6154D6B6 CE8EF4AD 69B15D49 82559B29
         7BCF1885 C529F566 660E57EC 68EDBC3C 05726CC0 2FD4CBF4 976EAA9A
         FD5138FE 8376435B 9FC61D2F C0EB06E3
-      ).join.hex
-      @g = 2
-      @hash = Digest::SHA1
-
-    when 1536
-      @N = %w(
+      )
+    )
+    
+    @primes[1536] = self.new(
+      1536,
+      2,
+      %w(
         9DEF3CAF B939277A B1F12A86 17A47BBB DBA51DF4 99AC4C80 BEEEA961
         4B19CC4D 5F4F5F55 6E27CBDE 51C6A94B E4607A29 1558903B A0D0F843
         80B655BB 9A22E8DC DF028A7C EC67F0D0 8134B1C8 B9798914 9B609E0B
@@ -25,12 +40,13 @@ module SIRP
         6EDF0195 39349627 DB2FD53D 24B7C486 65772E43 7D6C7F8C E442734A
         F7CCB7AE 837C264A E3A9BEB8 7F8A2FE9 B8B5292E 5A021FFF 5E91479E
         8CE7A28C 2442C6F3 15180F93 499A234D CF76E3FE D135F9BB
-      ).join.hex
-      @g = 2
-      @hash = Digest::SHA1
-
-    when 2048
-      @N = %w(
+      )
+    )
+    
+    @primes[2048] = self.new(
+      2048,
+      2,
+      %w(
         AC6BDB41 324A9A9B F166DE5E 1389582F AF72B665 1987EE07 FC319294
         3DB56050 A37329CB B4A099ED 8193E075 7767A13D D52312AB 4B03310D
         CD7F48A9 DA04FD50 E8083969 EDB767B0 CF609517 9A163AB3 661A05FB
@@ -41,12 +57,13 @@ module SIRP
         03CE5329 9CCC041C 7BC308D8 2A5698F3 A8D0C382 71AE35F8 E9DBFBB6
         94B5C803 D89F7AE4 35DE236D 525F5475 9B65E372 FCD68EF2 0FA7111F
         9E4AFF73
-      ).join.hex
-      @g = 2
-      @hash = Digest::SHA256
-
-    when 3072
-      @N = %w(
+      )
+    )
+    
+    @primes[3072] = self.new(
+      3072,
+      5,
+      %w(
         FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08
         8A67CC74 020BBEA6 3B139B22 514A0879 8E3404DD EF9519B3 CD3A431B
         302B0A6D F25F1437 4FE1356D 6D51C245 E485B576 625E7EC6 F44C42E9
@@ -61,12 +78,13 @@ module SIRP
         1AD2EE6B F12FFA06 D98A0864 D8760273 3EC86A64 521F2B18 177B200C
         BBE11757 7A615D6C 770988C0 BAD946E2 08E24FA0 74E5AB31 43DB5BFC
         E0FD108E 4B82D120 A93AD2CA FFFFFFFF FFFFFFFF
-      ).join.hex
-      @g = 5
-      @hash = Digest::SHA256
-
-    when 4096
-      @N = %w(
+      )
+    )
+    
+    @primes[4096] = self.new(
+      4096,
+      5,
+      %w(
         FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08
         8A67CC74 020BBEA6 3B139B22 514A0879 8E3404DD EF9519B3 CD3A431B
         302B0A6D F25F1437 4FE1356D 6D51C245 E485B576 625E7EC6 F44C42E9
@@ -86,12 +104,13 @@ module SIRP
         233BA186 515BE7ED 1F612970 CEE2D7AF B81BDD76 2170481C D0069127
         D5B05AA9 93B4EA98 8D8FDDC1 86FFB7DC 90A6C08F 4DF435C9 34063199
         FFFFFFFF FFFFFFFF
-      ).join.hex
-      @g = 5
-      @hash = Digest::SHA256
-
-    when 6144
-      @N = %w(
+      )
+    )
+    
+    @primes[6144] = self.new(
+      6144,
+      5,
+      %w(
         FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08
         8A67CC74 020BBEA6 3B139B22 514A0879 8E3404DD EF9519B3 CD3A431B
         302B0A6D F25F1437 4FE1356D 6D51C245 E485B576 625E7EC6 F44C42E9
@@ -120,12 +139,13 @@ module SIRP
         B7C5DA76 F550AA3D 8A1FBFF0 EB19CCB1 A313D55C DA56C9EC 2EF29632
         387FE8D7 6E3C0468 043E8F66 3F4860EE 12BF2D5B 0B7474D6 E694F91E
         6DCC4024 FFFFFFFF FFFFFFFF
-      ).join.hex
-      @g = 5
-      @hash = Digest::SHA256
-
-    when 8192
-      @N = %w(
+      )
+    )
+    
+    @primes[8192] = self.new(
+      8192,
+      19,
+      %w(
         FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08
         8A67CC74 020BBEA6 3B139B22 514A0879 8E3404DD EF9519B3 CD3A431B
         302B0A6D F25F1437 4FE1356D 6D51C245 E485B576 625E7EC6 F44C42E9
@@ -163,13 +183,9 @@ module SIRP
         359046F4 EB879F92 4009438B 481C6CD7 889A002E D5EE382B C9190DA6
         FC026E47 9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71
         60C980DD 98EDD3DF FFFFFFFF FFFFFFFF
-      ).join.hex
-      @g = 19
-      @hash = Digest::SHA256
-    else
-      raise ArgumentError, 'must be a known group size'
-    end
-
-    [@N, @g, @hash]
+      )
+    )
+    
+    @primes.freeze
   end
 end

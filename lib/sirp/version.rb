@@ -1,3 +1,3 @@
 module SIRP
-  VERSION = '2.0.0.pre'.freeze
+  VERSION = '3.0.0.pre'.freeze
 end
