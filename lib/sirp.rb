@@ -1,11 +1,34 @@
 require 'openssl'
-require 'digest'
+require 'digest/sha2'
 require 'rbnacl/libsodium'
 require 'rbnacl'
 require 'contracts'
-require 'sirp/util'
-require 'sirp/sirp'
+
+module SIRP
+  module_function def num_to_hex(num)
+    hex_str = num.to_s(16)
+    even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str
+    even_hex_str.downcase
+  end
+
+  module_function def secure_compare(a, b)
+    # Do all comparisons on equal length hashes of the inputs
+    a = Digest::SHA256.hexdigest(a)
+    b = Digest::SHA256.hexdigest(b)
+    return false unless a.bytesize == b.bytesize
+
+    l = a.unpack('C*')
+
+    r = 0
+    i = -1
+    b.each_byte { |v| r |= v ^ l[i+=1] }
+    r == 0
+  end
+end
+
 require 'sirp/parameters'
-require 'sirp/client'
-require 'sirp/verifier'
+require 'sirp/backend'
+require 'sirp/server/start'
+require 'sirp/server/finish'
+
 require 'sirp/version'
