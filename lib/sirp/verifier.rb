@@ -43,7 +43,7 @@ module SIRP
       raise ArgumentError, 'username must not be an emoty string' if username.empty?
       raise ArgumentError, 'password must not be an emoty string' if password.empty?
 
-      @salt ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(16))
+      @salt ||= SecureRandom.hex(16)
       x = calc_x(username, password, @salt)
       v = calc_v(x, @N, @g)
       { username: username, verifier: num_to_hex(v), salt: @salt }
@@ -69,7 +69,7 @@ module SIRP
 
       # Generate b and B
       v = xverifier.to_i(16)
-      @b ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(32)).hex
+      @b ||= SecureRandom.hex(32).hex
       @B = num_to_hex(calc_B(@b, k, v, @N, @g))
 
       {

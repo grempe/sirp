@@ -34,7 +34,7 @@ module SIRP
     # @return [String] the value of 'A' in hex
     Contract None => String
     def start_authentication
-      @a ||= RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(32)).hex
+      @a ||= SecureRandom.hex(32).hex
       @A = num_to_hex(calc_A(@a, @N, @g))
     end
 
