@@ -56,13 +56,9 @@ You can check my documentation quality score at
 
 ## Supported Platforms
 
-SiRP is continuously integration tested on the following Ruby VMs:
+SiRP is continuously integration tested on the versions of MRI Ruby found in the `.travis.yml` file.
 
-* MRI 2.1
-* MRI 2.2
-* MRI 2.3
-
-Ruby versions < 2.1 are not supported.
+This may work with other Ruby versions, but they are not supported.
 
 ## Installation
 
