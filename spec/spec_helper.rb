@@ -7,6 +7,7 @@ if ENV['TRAVIS'] || ENV['CI'] || ENV['JENKINS_URL'] || ENV['TDDIUM'] || ENV['COV
   Coveralls.wear!
 else
   # coco : local code coverage
+  require 'fileutils'
   require 'coco'
 end
 
