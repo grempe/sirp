@@ -18,16 +18,6 @@ module SIRP
         @M = backend.calc_M(proof[:I], proof[:s], proof[:A], proof[:B], @K)
       end
 
-      def validate_params!
-        raise ArgumentError, 'proof must have required hash keys' unless @proof.keys == [:A, :B, :b, :I, :s, :v]
-        raise ArgumentError, 'client M must be a hex string' unless @client_M =~ /^[a-fA-F0-9]+$/
-      end
-
-      def calc_S
-        u = backend.calc_u(proof[:A], proof[:B])
-        SIRP.num_to_hex(backend.calc_server_S(proof[:A], @b, @v, u))
-      end
-
       def match
         success? ? backend.calc_H_AMK(proof[:A], @M, @K) : ''
       end
@@ -35,6 +25,19 @@ module SIRP
       def success?
         SIRP.secure_compare(@M, @client_M)
       end
+
+    private
+
+      def validate_params!
+        raise ArgumentError, 'proof must have required hash keys' unless @proof.keys == [:A, :B, :b, :I, :s, :v]
+        raise ArgumentError, 'client M must be a hex string' unless SIRP.hex_str?(@client_M)
+      end
+
+      def calc_S
+        u = backend.calc_u(proof[:A], proof[:B])
+        SIRP.num_to_hex(backend.calc_server_S(proof[:A], @b, @v, u))
+      end
+
     end
   end
 end

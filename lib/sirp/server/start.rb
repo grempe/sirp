@@ -34,9 +34,9 @@ module SIRP
 
       def validate_params!
         raise ArgumentError, 'username must not be an empty string' if user[:username].empty?
-        raise ArgumentError, 'verifier must be a hex string' unless user[:verifier] =~ /^[a-fA-F0-9]+$/
-        raise ArgumentError, 'salt must be a hex string' unless user[:salt] =~ /^[a-fA-F0-9]+$/
-        raise ArgumentError, '"A" must be a hex string' unless @A =~ /^[a-fA-F0-9]+$/
+        raise ArgumentError, 'verifier must be a hex string' unless SIRP.hex_str?(user[:verifier])
+        raise ArgumentError, 'salt must be a hex string' unless SIRP.hex_str?(user[:salt])
+        raise ArgumentError, '"A" must be a hex string' unless SIRP.hex_str?(@A)
 
         fail SafetyCheckError, 'A.to_i(16) % N cannot equal 0' if (@A.to_i(16) % backend.prime.N).zero?
       end
