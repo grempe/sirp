@@ -5,6 +5,8 @@ require 'rbnacl'
 require 'contracts'
 
 module SIRP
+  SafetyCheckError = Class.new(StandardError)
+
   module_function def num_to_hex(num)
     hex_str = num.to_s(16)
     even_hex_str = hex_str.length.odd? ? '0' + hex_str : hex_str

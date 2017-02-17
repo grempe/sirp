@@ -6,7 +6,7 @@ module SIRP
     attr_reader :prime
 
     def initialize(group=Prime[2048], hash=Digest::SHA256)
-      @prime = Prime[group]
+      @prime = group
       @hash = hash
     end
 
@@ -16,22 +16,22 @@ module SIRP
     #
     # a^b (mod m)
     #
-    # @param a [Fixnum, Bignum] the base value as a Fixnum or Bignum, depending on size
-    # @param b [Bignum] the exponent value as a Bignum
-    # @param m [Bignum] the modulus value as a Bignum
-    # @return [Bignum] the solution as a Bignum
-    Contract Or[Fixnum, Bignum], Nat, Nat => Bignum
+    # @param a [Integer] the base value as an Integer, depending on size
+    # @param b [Integer] the exponent value as an Integer
+    # @param m [Integer] the modulus value as an Integer
+    # @return [Integer] the solution as an Integer
+    Contract Integer, Nat, Nat => Integer
     def mod_pow(a, b, m)
       # Convert type and use OpenSSL::BN#mod_exp to do the calculation
-      # Convert back to a Bignum so OpenSSL::BN doesn't leak everywhere
+      # Convert back to an Integer so OpenSSL::BN doesn't leak everywhere
       a.to_bn.mod_exp(b, m).to_i
     end
 
     # One-Way Hash Function
     #
     # @param a [Array] the Array of values to be hashed together
-    # @return [Bignum] the hexdigest as a Bignum
-    Contract ArrayOf[Or[String, Nat]] => Bignum
+    # @return [Integer] the hexdigest as an Integer
+    Contract ArrayOf[Or[String, Nat]] => Integer
     def H(a)
       hasher = @hash.new
 
@@ -47,8 +47,8 @@ module SIRP
     # Multiplier Parameter
     # k = H(N, g) (in SRP-6a)
     #
-    # @return [Bignum] the 'k' value as a Bignum
-    Contract None => Bignum
+    # @return [Integer] the 'k' value as an Integer
+    Contract None => Integer
     def k
       @k ||= H([prime.N, prime.g].map(&:to_s))
     end
@@ -97,8 +97,8 @@ module SIRP
     # @param username [String] the 'username' (I) as a String
     # @param password [String] the 'password' (p) as a String
     # @param salt [String] the 'salt' in hex
-    # @return [Bignum] the Scrypt+HMAC stretched 'x' value as a Bignum
-    Contract String, String, String => Bignum
+    # @return [Integer] the Scrypt+HMAC stretched 'x' value as an Integer
+    Contract String, String, String => Integer
     def calc_x(username, password, salt)
       prehash_pw = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), 'srp-x-1', password)
       int_key = RbNaCl::PasswordHash.scrypt(prehash_pw, salt.force_encoding('BINARY'), 2**19, 2**24, 32).each_byte.map { |b| b.to_s(16) }.join
@@ -111,8 +111,8 @@ module SIRP
     #
     # @param xaa [String] the 'A' value in hex
     # @param xbb [String] the 'B' value in hex
-    # @return [Bignum] the 'u' value as a Bignum
-    Contract String, String => Bignum
+    # @return [Integer] the 'u' value as an Integer
+    Contract String, String => Integer
     def calc_u(xaa, xbb)
       u = H([xaa, xbb])
 
@@ -122,9 +122,9 @@ module SIRP
     # Password Verifier
     # v = g^x (mod N)
     #
-    # @param x [Bignum] the 'x' value as a Bignum
-    # @return [Bignum] the client 'v' value as a Bignum
-    Contract Bignum => Bignum
+    # @param x [Integer] the 'x' value as an Integer
+    # @return [Integer] the client 'v' value as an Integer
+    Contract Integer => Integer
     def calc_v(x)
       mod_pow(prime.g, x, prime.N)
     end
@@ -132,9 +132,9 @@ module SIRP
     # Client Ephemeral Value
     # A = g^a (mod N)
     #
-    # @param a [Bignum] the 'a' value as a Bignum
-    # @return [Bignum] the client ephemeral 'A' value as a Bignum
-    Contract Bignum, Bignum, Fixnum => Bignum
+    # @param a [Integer] the 'a' value as an Integer
+    # @return [Integer] the client ephemeral 'A' value as an Integer
+    Contract Integer, Integer, Integer => Integer
     def calc_A(a)
       mod_pow(prime.g, a, prime.N)
     end
@@ -142,10 +142,10 @@ module SIRP
     # Server Ephemeral Value
     # B = kv + g^b % N
     #
-    # @param b [Bignum] the 'b' value as a Bignum
-    # @param v [Bignum] the 'v' value as a Bignum
-    # @return [Bignum] the verifier ephemeral 'B' value as a Bignum
-    Contract Bignum, Bignum, Bignum => Bignum
+    # @param b [Integer] the 'b' value as an Integer
+    # @param v [Integer] the 'v' value as an Integer
+    # @return [Integer] the verifier ephemeral 'B' value as an Integer
+    Contract Integer, Integer => Integer
     def calc_B(b, v)
       (k * v + mod_pow(prime.g, b, prime.N)) % prime.N
     end
@@ -153,12 +153,12 @@ module SIRP
     # Client Session Key
     # S = (B - (k * g^x)) ^ (a + (u * x)) % N
     #
-    # @param bb [Bignum] the 'B' value as a Bignum
-    # @param a [Bignum] the 'a' value as a Bignum
-    # @param x [Bignum] the 'x' value as a Bignum
-    # @param u [Bignum] the 'u' value as a Bignum
-    # @return [Bignum] the client 'S' value as a Bignum
-    Contract Bignum, Bignum, Bignum, Bignum, Bignum => Bignum
+    # @param bb [Integer] the 'B' value as an Integer
+    # @param a [Integer] the 'a' value as an Integer
+    # @param x [Integer] the 'x' value as an Integer
+    # @param u [Integer] the 'u' value as an Integer
+    # @return [Integer] the client 'S' value as an Integer
+    Contract Integer, Integer, Integer, Integer, Integer => Integer
     def calc_client_S(bb, a, x, u)
       mod_pow((bb - k * mod_pow(prime.g, x, prime.N)), a + u * x, prime.N)
     end
@@ -166,12 +166,12 @@ module SIRP
     # Server Session Key
     # S = (A * v^u) ^ b % N
     #
-    # @param aa [Bignum] the 'A' value as a String
-    # @param b [Bignum] the 'b' value as a Bignum
-    # @param v [Bignum] the 'v' value as a Bignum
-    # @param u [Bignum] the 'u' value as a Bignum
-    # @return [Bignum] the verifier 'S' value as a Bignum
-    Contract String, Bignum, Bignum, Bignum => Bignum
+    # @param aa [Integer] the 'A' value as a String
+    # @param b [Integer] the 'b' value as an Integer
+    # @param v [Integer] the 'v' value as an Integer
+    # @param u [Integer] the 'u' value as an Integer
+    # @return [Integer] the verifier 'S' value as an Integer
+    Contract String, Integer, Integer, Integer => Integer
     def calc_server_S(aa, b, v, u)
       mod_pow(aa.to_i(16) * mod_pow(v, u, prime.N), b, prime.N)
     end
@@ -194,7 +194,7 @@ module SIRP
 
     # K = H(S)
     #
-    # @param ss [Bignum] the 'S' value as a Bignum
+    # @param ss [Integer] the 'S' value as an Integer
     # @return [String] the 'K' value in hex
     Contract String => String
     def calc_K(ss)

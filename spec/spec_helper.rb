@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # coveralls.io and coco are incompatible. Run each in their own env.
 if ENV['TRAVIS'] || ENV['CI'] || ENV['JENKINS_URL'] || ENV['TDDIUM'] || ENV['COVERALLS_RUN_LOCALLY']
   # coveralls.io : web based code coverage
@@ -12,31 +10,32 @@ end
 
 require 'sirp'
 
-# Monkey-patch Client and Verifier classes for testing convenience
-module SIRP
-  class Verifier
-    def set_aa(val)
-      @A = val
-    end
+RSpec.configure do |config|
+  config.filter_run :focus
+  config.run_all_when_everything_filtered = true
+  config.shared_context_metadata_behavior = :apply_to_host_groups
 
-    def set_b(val)
-      @b = val
-    end
+  if config.files_to_run.one?
+    config.full_backtrace = true
 
-    def set_salt(val)
-      @salt = val
-    end
+    config.default_formatter = 'doc'
   end
-end
 
-module SIRP
-  class Client
-    def set_a(val)
-      @a = val
-    end
+  config.order = :random
 
-    def set_h_amk(val)
-      @H_AMK = val
-    end
+  Kernel.srand(config.seed)
+
+  config.disable_monkey_patching!
+  config.warnings = false
+
+  config.expect_with :rspec do |expectations|
+    expectations.syntax = :expect
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
+
+  config.mock_with :rspec do |mocks|
+    mocks.syntax = :expect
+    mocks.verify_partial_doubles = true
+    mocks.verify_doubled_constant_names = true
   end
 end
