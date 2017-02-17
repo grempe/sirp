@@ -5,7 +5,14 @@ require 'rbnacl'
 require 'contracts'
 
 module SIRP
+  HEX_REG = /^\h+$/.freeze
+
   SafetyCheckError = Class.new(StandardError)
+
+  # NOTE: fallback to ruby < 2.4 required
+  module_function def hex_str?(str)
+    HEX_REG.match?(str)
+  end
 
   module_function def num_to_hex(num)
     hex_str = num.to_s(16)
