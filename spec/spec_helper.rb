@@ -10,6 +10,8 @@ end
 
 require 'sirp'
 
+Dir[File.join(Dir.pwd, 'spec/shared/**/*.rb')].each { |f| require f }
+
 RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
