@@ -8,7 +8,7 @@ else
   require 'coco'
 end
 
-require 'sirp'
+require 'sirp/all'
 
 Dir[File.join(Dir.pwd, 'spec/shared/**/*.rb')].each { |f| require f }
 

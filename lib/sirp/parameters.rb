@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SIRP
   class Prime
     @primes = {}
@@ -16,7 +18,7 @@ module SIRP
       @N = nn.join.hex
       freeze
     end
-    
+
     @primes[1024] = self.new(
       1024,
       2,
@@ -28,7 +30,7 @@ module SIRP
         FD5138FE 8376435B 9FC61D2F C0EB06E3
       )
     )
-    
+
     @primes[1536] = self.new(
       1536,
       2,
@@ -42,7 +44,7 @@ module SIRP
         8CE7A28C 2442C6F3 15180F93 499A234D CF76E3FE D135F9BB
       )
     )
-    
+
     @primes[2048] = self.new(
       2048,
       2,
@@ -59,7 +61,7 @@ module SIRP
         9E4AFF73
       )
     )
-    
+
     @primes[3072] = self.new(
       3072,
       5,
@@ -80,7 +82,7 @@ module SIRP
         E0FD108E 4B82D120 A93AD2CA FFFFFFFF FFFFFFFF
       )
     )
-    
+
     @primes[4096] = self.new(
       4096,
       5,
@@ -106,7 +108,7 @@ module SIRP
         FFFFFFFF FFFFFFFF
       )
     )
-    
+
     @primes[6144] = self.new(
       6144,
       5,
@@ -141,7 +143,7 @@ module SIRP
         6DCC4024 FFFFFFFF FFFFFFFF
       )
     )
-    
+
     @primes[8192] = self.new(
       8192,
       19,
@@ -185,7 +187,7 @@ module SIRP
         60C980DD 98EDD3DF FFFFFFFF FFFFFFFF
       )
     )
-    
+
     @primes.freeze
   end
 end

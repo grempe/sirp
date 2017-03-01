@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+require 'contracts'
+require 'openssl'
+
 module SIRP
   class Backend
     include Contracts::Core

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SIRP
   class Server
     class Finish

@@ -1,8 +1,6 @@
-require 'openssl'
 require 'digest/sha2'
 require 'rbnacl/libsodium'
 require 'rbnacl'
-require 'contracts'
 
 module SIRP
   HEX_REG = /^\h+$/.freeze
@@ -37,7 +35,5 @@ end
 
 require 'sirp/parameters'
 require 'sirp/backend'
-require 'sirp/server/start'
-require 'sirp/server/finish'
 
 require 'sirp/version'
