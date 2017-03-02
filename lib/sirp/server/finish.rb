@@ -5,7 +5,7 @@ module SIRP
     class Finish
       attr_reader :backend, :proof
 
-      def initialize(proof, mm, group, hash)
+      def initialize(proof, mm, group=Prime[2048], hash=Digest::SHA256)
         @backend = Backend.new(group, hash)
 
         @proof = proof

@@ -5,7 +5,7 @@ module SIRP
     class Start
       attr_reader :user, :backend
 
-      def initialize(user, aa, group, hash)
+      def initialize(user, aa, group=Prime[2048], hash=Digest::SHA256)
         @backend = Backend.new(group, hash)
         @user = user
         @A = aa

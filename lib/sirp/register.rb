@@ -4,7 +4,7 @@ require 'sirp'
 
 module SIRP
   class Register
-    def initialize(username, password, group, hash)
+    def initialize(username, password, group=Prime[2048], hash=Digest::SHA256)
       @backend = Backend.new(group, hash)
 
       # TODO: truncate values
