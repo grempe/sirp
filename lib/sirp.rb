@@ -1,6 +1,7 @@
 require 'digest/sha2'
 require 'rbnacl/libsodium'
 require 'rbnacl'
+require 'openssl'
 
 module SIRP
   HEX_REG = /^\h+$/.freeze
