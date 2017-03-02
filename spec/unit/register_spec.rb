@@ -7,6 +7,40 @@ RSpec.describe SIRP::Register do
   let(:group) { SIRP::Prime[1024] }
   let(:hash)  { Digest::SHA256 }
 
+  describe '.new' do
+    context 'when username is an empty string' do
+      let(:username) { '' }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, 'username must not be an empty string')
+      end
+    end
+
+    context 'when username is an empty string with whitespace chars' do
+      let(:username) { "\x00\t\n\v\f\r " }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, 'username must not be an empty string')
+      end
+    end
+
+    context 'when password is an empty string' do
+      let(:password) { '' }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, 'password must not be an empty string')
+      end
+    end
+
+    context 'when password is an empty string with whitespace chars' do
+      let(:password) { "\x00\t\n\v\f\r " }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, 'password must not be an empty string')
+      end
+    end
+  end
+
   describe '#credentials' do
     subject { instance.credentials }
 

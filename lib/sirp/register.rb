@@ -25,8 +25,8 @@ module SIRP
   private
 
     def validate_params!
-      raise ArgumentError, 'username must not be an empty string' if @username.empty?
-      raise ArgumentError, 'password must not be an empty string' if @password.empty?
+      raise ArgumentError, 'username must not be an empty string' if SIRP.empty?(@username)
+      raise ArgumentError, 'password must not be an empty string' if SIRP.empty?(@password)
     end
 
     def generate_salt

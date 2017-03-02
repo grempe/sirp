@@ -12,8 +12,16 @@ RSpec.describe SIRP::Server::Start do
   end
 
   describe '.new' do
-    context 'when empty username' do
+    context 'when username is an empty string' do
       let(:username) { '' }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, 'username must not be an empty string')
+      end
+    end
+
+    context 'when username is an empty string with whitespace chars' do
+      let(:username) { "\x00\t\n\v\f\r " }
 
       it 'should fail to initialize' do
         expect { instance }.to raise_error(ArgumentError, 'username must not be an empty string')
@@ -44,6 +52,14 @@ RSpec.describe SIRP::Server::Start do
       end
     end
 
+    context 'when salt is an empty string with whitespace chars' do
+      let(:salt) { "\x00\t\n\v\f\r " }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, 'salt must be a hex string')
+      end
+    end
+
     context 'when salt is not hex string' do
       let(:salt) { '💩' }
 
@@ -54,6 +70,14 @@ RSpec.describe SIRP::Server::Start do
 
     context 'when "A" is an empty string' do
       let(:aa) { '' }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, '"A" must be a hex string')
+      end
+    end
+
+    context 'when "A" is an empty string with whitespace chars' do
+      let(:aa) { "\x00\t\n\v\f\r " }
 
       it 'should fail to initialize' do
         expect { instance }.to raise_error(ArgumentError, '"A" must be a hex string')

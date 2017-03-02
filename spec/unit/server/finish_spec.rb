@@ -25,6 +25,14 @@ RSpec.describe SIRP::Server::Finish do
       end
     end
 
+    context 'when "M" is an empty string with whitespace chars' do
+      let(:mm) { "\x00\t\n\v\f\r " }
+
+      it 'should fail to initialize' do
+        expect { instance }.to raise_error(ArgumentError, 'client M must be a hex string')
+      end
+    end
+
     context 'when "M" is not hex string' do
       let(:mm) { '💩' }
 

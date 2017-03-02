@@ -7,6 +7,10 @@ module SIRP
 
   SafetyCheckError = Class.new(StandardError)
 
+  module_function def empty?(str)
+    str.strip.empty?
+  end
+
   # NOTE: fallback to ruby < 2.4 required
   module_function def hex_str?(str)
     HEX_REG.match?(str)
