@@ -40,7 +40,7 @@ module SIRP
       hasher = @hash.new
 
       a.compact.map do |v|
-        xv = v.is_a?(String) ? v : SIRP.num_to_hex(v)
+        xv = v.is_a?(String) ? v : Utils.num_to_hex(v)
         hasher.update(xv.downcase)
       end
 
@@ -156,7 +156,7 @@ module SIRP
       hg = @hash.hexdigest(prime.g.to_s)
       hxor = hn.to_i(16) ^ hg.to_i(16)
       hi = @hash.hexdigest(username)
-      SIRP.num_to_hex(H([[hxor, hi.to_i(16), xsalt, xaa.to_i(16), xbb.to_i(16), xkk].map(&:to_s).join]))
+      Utils.num_to_hex(H([[hxor, hi.to_i(16), xsalt, xaa.to_i(16), xbb.to_i(16), xkk].map(&:to_s).join]))
     end
 
     # K = H(S)

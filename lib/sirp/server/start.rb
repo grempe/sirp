@@ -14,7 +14,7 @@ module SIRP
 
         @b = generate_b
         @v = user[:verifier]
-        @B = SIRP.num_to_hex(backend.calc_B(@b.hex, @v.to_i(16)))
+        @B = Utils.num_to_hex(backend.calc_B(@b.hex, @v.to_i(16)))
       end
 
       def challenge
@@ -35,10 +35,10 @@ module SIRP
     private
 
       def validate_params!
-        raise ArgumentError, 'username must not be an empty string' if SIRP.empty?(user[:username])
-        raise ArgumentError, 'verifier must be a hex string' unless SIRP.hex_str?(user[:verifier])
-        raise ArgumentError, 'salt must be a hex string' unless SIRP.hex_str?(user[:salt])
-        raise ArgumentError, '"A" must be a hex string' unless SIRP.hex_str?(@A)
+        raise ArgumentError, 'username must not be an empty string' if Utils.empty?(user[:username])
+        raise ArgumentError, 'verifier must be a hex string' unless Utils.hex_str?(user[:verifier])
+        raise ArgumentError, 'salt must be a hex string' unless Utils.hex_str?(user[:salt])
+        raise ArgumentError, '"A" must be a hex string' unless Utils.hex_str?(@A)
 
         fail SafetyCheckError, 'A.to_i(16) % N cannot equal 0' if (@A.to_i(16) % backend.prime.N).zero?
       end
