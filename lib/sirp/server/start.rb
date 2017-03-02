@@ -12,7 +12,7 @@ module SIRP
 
         validate_params!
 
-        @b = RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(32))
+        @b = generate_b
         @v = user[:verifier]
         @B = SIRP.num_to_hex(backend.calc_B(@b.hex, @v.to_i(16)))
       end
@@ -41,6 +41,10 @@ module SIRP
         raise ArgumentError, '"A" must be a hex string' unless SIRP.hex_str?(@A)
 
         fail SafetyCheckError, 'A.to_i(16) % N cannot equal 0' if (@A.to_i(16) % backend.prime.N).zero?
+      end
+
+      def generate_b
+        RbNaCl::Util.bin2hex(RbNaCl::Random.random_bytes(32))
       end
     end
   end
