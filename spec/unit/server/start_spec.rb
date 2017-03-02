@@ -53,7 +53,7 @@ RSpec.describe SIRP::Server::Start do
     end
 
     context 'when "A" is an empty string' do
-      let(:aa) { '💩' }
+      let(:aa) { '' }
 
       it 'should fail to initialize' do
         expect { instance }.to raise_error(ArgumentError, '"A" must be a hex string')
