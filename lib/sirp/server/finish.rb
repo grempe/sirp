@@ -5,10 +5,10 @@ module SIRP
     class Finish
       attr_reader :backend, :proof
 
-      def initialize(proof, mm, group=Prime[2048], hash=Digest::SHA256, backend_cls=Backend::SCryptHMAC)
+      def initialize(proof_attrs, mm, group=Prime[2048], hash=Digest::SHA256, backend_cls=Backend::SCryptHMAC)
         @backend = backend_cls.new(group, hash)
 
-        @proof = proof
+        @proof = Utils.symbolize_keys(proof_attrs)
         @client_M = mm
 
         validate_params!

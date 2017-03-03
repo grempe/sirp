@@ -18,6 +18,10 @@ module SIRP
         even_hex_str.downcase
       end
 
+      def symbolize_keys(hash)
+        hash.each_with_object({}) { |(k, v), res| res[k.to_sym] = v }
+      end
+
       def secure_compare(a, b)
         # Do all comparisons on equal length hashes of the inputs
         a = Digest::SHA256.hexdigest(a)

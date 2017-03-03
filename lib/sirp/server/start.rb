@@ -5,9 +5,9 @@ module SIRP
     class Start
       attr_reader :user, :backend
 
-      def initialize(user, aa, group=Prime[2048], hash=Digest::SHA256, backend_cls=Backend::SCryptHMAC)
+      def initialize(user_attrs, aa, group=Prime[2048], hash=Digest::SHA256, backend_cls=Backend::SCryptHMAC)
         @backend = backend_cls.new(group, hash)
-        @user = user
+        @user = Utils.symbolize_keys(user_attrs)
         @A = aa
 
         validate_params!

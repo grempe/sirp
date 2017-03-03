@@ -99,6 +99,20 @@ RSpec.describe SIRP::Server::Start do
         expect { instance }.to raise_error(SIRP::SafetyCheckError, 'A.to_i(16) % N cannot equal 0')
       end
     end
+
+    context 'when user have string keys' do
+      let(:user) do
+        {
+          "username" => username,
+          "verifier" => verifier,
+          "salt"     => salt
+        }
+      end
+
+      it 'should not fails' do
+        expect { instance }.to_not raise_error
+      end
+    end
   end
 
   describe '#challenge' do

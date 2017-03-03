@@ -52,6 +52,23 @@ RSpec.describe SIRP::Server::Finish do
         end
       end
     end
+
+    context 'when proof have string keys' do
+      let(:proof) do
+        {
+          'A' => aa,
+          'B' => bb,
+          'b' => b,
+          'I' => username,
+          's' => salt,
+          'v' => verifier
+        }
+      end
+
+      it 'should not fail' do
+        expect { instance }.to_not raise_error
+      end
+    end
   end
 
   describe '#success?' do
