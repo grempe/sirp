@@ -31,8 +31,8 @@ module SIRP
     private
 
       def validate_params!
-        raise ArgumentError, 'proof must have required hash keys' unless @proof.keys == [:A, :B, :b, :I, :s, :v]
-        raise ArgumentError, 'client M must be a hex string' unless Utils.hex_str?(@client_M)
+        fail ArgumentError, 'proof must have required hash keys' unless @proof.keys == [:A, :B, :b, :I, :s, :v]
+        fail ArgumentError, 'client M must be a hex string' unless Utils.hex_str?(@client_M)
       end
 
       def calc_S

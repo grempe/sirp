@@ -45,4 +45,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'coveralls', '~> 0.8'
   spec.add_development_dependency 'coco', '~> 0.14'
   spec.add_development_dependency 'wwtd', '~> 1.3'
+  spec.add_development_dependency 'inch', '~> 0.7'
 end

@@ -178,7 +178,15 @@ module SIRP
     def calc_H_AMK(xaa, xmm, xkk)
       @hash.hexdigest(xaa.to_i(16).to_s + xmm + xkk)
     end
+
+    # Client Ephemeral Value
+    # A = g^a (mod N)
+    #
+    # @param a [Bignum] the 'a' value as a Bignum
+    # @return [Bignum] the client ephemeral 'A' value as a Bignum
+    Contract Bignum => Bignum
+    def calc_A(a)
+      mod_pow(prime.g, a, prime.N)
+    end
   end
 end
-
-require 'sirp/backend/scrypt_hmac'

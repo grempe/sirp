@@ -84,7 +84,7 @@ RSpec.describe SIRP::Server::Start do
       end
     end
 
-    context 'when "A" is not hex string' do
+    context 'when "A" is not a hex string' do
       let(:aa) { '💩' }
 
       it 'should fail to initialize' do
