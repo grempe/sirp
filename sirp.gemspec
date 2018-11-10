@@ -35,7 +35,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # See : https://bugs.ruby-lang.org/issues/9569
-  spec.add_runtime_dependency 'rbnacl-libsodium', '~> 1.0'
   spec.add_runtime_dependency 'sysrandom', '~> 1.0'
   spec.add_runtime_dependency 'hashie', '~> 3.4'
 
