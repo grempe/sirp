@@ -66,6 +66,14 @@ module SIRP
       }
     end
 
+    def symbolize_keys_deep!(h)
+      h.keys.each do |k|
+        ks = k.respond_to?(:to_sym) ? k.to_sym : k
+        h[ks] = h.delete k # Preserve order even when k == ks
+        symbolize_keys_deep! h[ks] if h[ks].kind_of? Hash
+      end
+    end
+
     #
     # Phase 2 : Step 1 : See Client#start_authentication
     #
@@ -86,7 +94,7 @@ module SIRP
     # @return [String, false] the H_AMK value in hex for the client, or false if verification failed
     def verify_session(proof, client_M)
       raise ArgumentError, 'proof must be a hash' unless proof.is_a?(Hash)
-      proof = Hash[proof.map {|k,v| [k.to_sym, v]}]
+      symbolize_keys_deep!(proof)
       raise ArgumentError, 'proof must have required hash keys' unless proof.keys == [:A, :B, :b, :I, :s, :v]
       raise ArgumentError, 'client_M must be a string' unless client_M.is_a?(String)
       raise ArgumentError, 'client_M must be a hex string' unless client_M =~ /^[a-fA-F0-9]+$/
@@ -120,3 +128,4 @@ module SIRP
     end
   end
 end
+
