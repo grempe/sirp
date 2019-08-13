@@ -40,8 +40,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.4'
-  spec.add_development_dependency 'pry', '~> 0.10'
+  spec.add_development_dependency 'pry', '~> 0.12'
   spec.add_development_dependency 'coveralls', '~> 0.8'
-  spec.add_development_dependency 'coco', '~> 0.14'
+  spec.add_development_dependency 'coco', '~> 0.15'
   spec.add_development_dependency 'wwtd', '~> 1.3'
 end
