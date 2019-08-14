@@ -27,34 +27,9 @@ $ vi CHANGELOG.md
 $ git add CHANGELOG.md
 ```
 
-## Local Build and Install w/ Signed Gem
-
-The `build` step should ask for PEM passphrase to sign gem. If it does
-not ask it means that the signing cert is not present.
-
-Build:
-
-```sh
-$ rake build
-Enter PEM pass phrase:
-sirp x.x.x built to pkg/sirp-x.x.x.gem
-```
-
-Install locally w/ Cert:
-
-```sh
-$ gem uninstall sirp
-$ rbenv rehash
-$ gem install pkg/sirp-2.0.0.gem -P MediumSecurity
-Successfully installed sirp-x.x.x
-1 gem installed
-```
-
 ## Git Commit Version and CHANGELOG Changes, Tag and push to Github
 
 ```sh
-$ git add lib/sirp/version.rb
-$ git add CHANGELOG.md
 $ git commit -m 'Bump version v2.0.0'
 $ git tag -s v2.0.0 -m "v2.0.0" SHA1_OF_COMMIT
 ```

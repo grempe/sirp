@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.0.1 (8/14/2019)
+
+- Modernization of dependencies.
+- Fix issue with string keys for the proof. Fixes https://github.com/grempe/sirp/issues/7
+- Update supported Ruby versions in travis tests
+- Remove the unused and deprecated rbnacl-libsodium dependency
+- Removed RubyGem signing process and verification
+
 ## v2.0.0 (9/20/2016)
 
 Initial release after shake-down in a real app.
