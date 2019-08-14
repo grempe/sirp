@@ -1,7 +1,6 @@
 # SiRP : Secure (interoperable) Remote Password Authentication
 
 [![Gem Version](https://badge.fury.io/rb/sirp.svg)](https://badge.fury.io/rb/sirp)
-[![Dependency Status](https://gemnasium.com/badges/github.com/grempe/sirp.svg)](https://gemnasium.com/github.com/grempe/sirp)
 [![Build Status](https://travis-ci.org/grempe/sirp.svg?branch=master)](https://travis-ci.org/grempe/sirp)
 [![Coverage Status](https://coveralls.io/repos/github/grempe/sirp/badge.svg?branch=master)](https://coveralls.io/github/grempe/sirp?branch=master)
 [![Code Climate](https://codeclimate.com/github/grempe/sirp/badges/gpa.svg)](https://codeclimate.com/github/grempe/sirp)
@@ -69,6 +68,7 @@ gem 'sirp', '~> 2.0'
 ```
 
 And then execute:
+
 ```sh
 $ bundle
 ```
@@ -213,7 +213,7 @@ API and is not intended to be a 'copy & paste' code sample since the
 client and server interaction is something left up to the implementer and likely
 different in every case.
 
-``` ruby
+```ruby
 require 'sirp'
 
 username     = 'user'
